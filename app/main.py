@@ -79,9 +79,11 @@ class RepairBot:
             from .handlers.reviews import reviews_router
             from .handlers.ai_consultation import ai_router
             from .handlers.support import support_router
+            from .handlers.admin import admin_router
             
             # Добавляем роутеры в диспетчер (порядок важен!)
             self.dp.include_router(registration_router)
+            self.dp.include_router(admin_router)
             self.dp.include_router(orders_router)
             self.dp.include_router(services_router)
             self.dp.include_router(profile_router)
