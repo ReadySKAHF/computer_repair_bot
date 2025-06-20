@@ -87,14 +87,24 @@ async def start_create_review(callback: CallbackQuery, state: FSMContext, db_que
         # Получаем заказы пользователя
         orders = await db_queries.get_user_orders(callback.from_user.id, 20)
         
+        logging.info(f"Пользователь {callback.from_user.id}: найдено {len(orders) if orders else 0} заказов")
+        
         if not orders:
-            await callback.message.edit_text(
+            new_text = (
                 f"{SECTION_DESCRIPTIONS['REVIEW_CREATION']}\n\n"
                 "❌ У вас пока нет заказов для оценки.\n"
-                "Сначала сделайте заказ и дождитесь его выполнения!",
-                reply_markup=get_reviews_keyboard(),
-                parse_mode='Markdown'
+                "Сначала сделайте заказ и дождитесь его выполнения!"
             )
+            keyboard = get_reviews_keyboard()
+            
+            # Проверяем, отличается ли новый текст от текущего
+            current_text = callback.message.text or ""
+            if new_text != current_text:
+                await callback.message.edit_text(
+                    new_text,
+                    reply_markup=keyboard,
+                    parse_mode='Markdown'
+                )
             await callback.answer()
             return
         
@@ -102,31 +112,69 @@ async def start_create_review(callback: CallbackQuery, state: FSMContext, db_que
         available_orders = []
         for order in orders:
             order_id = order['id']
+            order_status = order['status']
+            
+            logging.info(f"Заказ {order_id}: статус = {order_status}")
             
             # Проверяем, есть ли уже отзыв на этот заказ
             has_review = await db_queries.check_review_exists(callback.from_user.id, order_id)
+            logging.info(f"Заказ {order_id}: отзыв существует = {has_review}")
             
-            if not has_review and order['status'] == 'completed':
+            # Заказ доступен для отзыва если статус 'completed' и нет отзыва
+            if not has_review and order_status == 'completed':
                 available_orders.append(order)
+                logging.info(f"Заказ {order_id} добавлен для отзыва")
+        
+        logging.info(f"Доступно для отзыва: {len(available_orders)} заказов")
         
         if not available_orders:
-            await callback.message.edit_text(
-                f"{SECTION_DESCRIPTIONS['REVIEW_CREATION']}\n\n"
-                "✅ Вы уже оставили отзывы на все выполненные заказы!\n"
-                "Спасибо за обратную связь!",
-                reply_markup=get_reviews_keyboard(),
-                parse_mode='Markdown'
-            )
+            # Проверяем причину недоступности
+            completed_orders = [o for o in orders if o['status'] == 'completed']
+            
+            if not completed_orders:
+                new_text = (
+                    f"{SECTION_DESCRIPTIONS['REVIEW_CREATION']}\n\n"
+                    "⏳ У вас нет завершенных заказов для оценки.\n"
+                    "Дождитесь выполнения ваших заказов!"
+                )
+            else:
+                new_text = (
+                    f"{SECTION_DESCRIPTIONS['REVIEW_CREATION']}\n\n"
+                    "✅ Вы уже оставили отзывы на все выполненные заказы!\n"
+                    "Спасибо за обратную связь!"
+                )
+            
+            keyboard = get_reviews_keyboard()
+            
+            # Проверяем, отличается ли новый текст от текущего
+            current_text = callback.message.text or ""
+            if new_text != current_text:
+                await callback.message.edit_text(
+                    new_text,
+                    reply_markup=keyboard,
+                    parse_mode='Markdown'
+                )
             await callback.answer()
             return
         
-        keyboard = get_review_creation_keyboard(available_orders)
-        await callback.message.edit_text(
+        # Есть заказы для отзыва
+        new_text = (
             f"{SECTION_DESCRIPTIONS['REVIEW_CREATION']}\n\n"
-            "Выберите заказ для оценки:",
-            reply_markup=keyboard,
-            parse_mode='Markdown'
+            "Выберите заказ для оценки:"
         )
+        keyboard = get_review_creation_keyboard(available_orders)
+        
+        # Проверяем, отличается ли новый контент от текущего
+        current_text = callback.message.text or ""
+        if new_text != current_text:
+            await callback.message.edit_text(
+                new_text,
+                reply_markup=keyboard,
+                parse_mode='Markdown'
+            )
+        else:
+            # Если текст тот же, просто обновляем клавиатуру
+            await callback.message.edit_reply_markup(reply_markup=keyboard)
         
         await state.set_state(ReviewStates.selecting_order)
         await callback.answer()
