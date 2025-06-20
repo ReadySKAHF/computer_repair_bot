@@ -1,5 +1,5 @@
 """
-Обработчики заказов
+Обработчики заказов (исправленная версия)
 """
 import logging
 import random
@@ -276,6 +276,10 @@ async def use_profile_address(callback: CallbackQuery, state: FSMContext, db_que
             return
         
         await state.update_data(order_address=user['address'])
+        
+        # Назначаем мастера здесь, когда все данные заказа готовы
+        await assign_master_to_order(state, db_queries)
+        
         await show_order_summary(callback, state, db_queries)
     
     except Exception as e:
@@ -310,6 +314,10 @@ async def process_custom_address(message: Message, state: FSMContext, db_queries
             return
         
         await state.update_data(order_address=cleaned_address)
+        
+        # Назначаем мастера здесь, когда все данные заказа готовы
+        await assign_master_to_order(state, db_queries)
+        
         await show_order_summary_after_address(message, state, db_queries)
     
     except Exception as e:
@@ -317,11 +325,45 @@ async def process_custom_address(message: Message, state: FSMContext, db_queries
         await message.answer("Ошибка при обработке адреса")
 
 
+async def assign_master_to_order(state: FSMContext, db_queries: DatabaseQueries):
+    """Назначение мастера для заказа"""
+    try:
+        data = await state.get_data()
+        
+        # Если мастер уже назначен, не меняем
+        if data.get('assigned_master_id'):
+            return
+        
+        # Получаем всех мастеров и выбираем случайного
+        masters = await db_queries.get_masters()
+        if masters:
+            master = random.choice(masters)
+            
+            # Вычисляем общую стоимость
+            selected_services = data.get('selected_services', set())
+            total_cost = 0
+            for service_id in selected_services:
+                service = await db_queries.get_service_by_id(service_id)
+                if service:
+                    total_cost += service['price']
+            
+            # Сохраняем назначенного мастера и стоимость
+            await state.update_data(
+                assigned_master_id=master['id'],
+                assigned_master_name=master['name'],
+                total_cost=total_cost
+            )
+            
+            logging.info(f"Назначен мастер {master['name']} (ID: {master['id']}) для заказа")
+    
+    except Exception as e:
+        logging.error(f"Ошибка в assign_master_to_order: {e}")
+
+
 async def show_order_summary(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
     """Показ итогового резюме заказа (из callback)"""
     try:
-        data = await state.get_data()
-        summary_text, keyboard = await build_order_summary(data, db_queries)
+        summary_text, keyboard = await build_order_summary(state, db_queries)
         
         await callback.message.edit_text(summary_text, reply_markup=keyboard, parse_mode='Markdown')
         await callback.answer()
@@ -334,8 +376,7 @@ async def show_order_summary(callback: CallbackQuery, state: FSMContext, db_quer
 async def show_order_summary_after_address(message: Message, state: FSMContext, db_queries: DatabaseQueries):
     """Показ итогового резюме заказа (после ввода адреса)"""
     try:
-        data = await state.get_data()
-        summary_text, keyboard = await build_order_summary(data, db_queries)
+        summary_text, keyboard = await build_order_summary(state, db_queries)
         
         await message.answer(summary_text, reply_markup=keyboard, parse_mode='Markdown')
     
@@ -344,19 +385,26 @@ async def show_order_summary_after_address(message: Message, state: FSMContext, 
         await message.answer("Ошибка при формировании резюме заказа")
 
 
-async def build_order_summary(data: dict, db_queries: DatabaseQueries) -> tuple:
-    """Построение резюме заказа"""
+async def build_order_summary(state: FSMContext, db_queries: DatabaseQueries) -> tuple:
+    """Построение резюме заказа с уже назначенным мастером"""
+    data = await state.get_data()
     selected_services = data.get('selected_services', set())
     order_time = data.get('order_time')
     order_date = data.get('order_date')
     order_address = data.get('order_address')
+    assigned_master_id = data.get('assigned_master_id')
+    assigned_master_name = data.get('assigned_master_name')
+    total_cost = data.get('total_cost', 0)
     
     if not selected_services:
         raise ValueError("Не выбраны услуги для заказа")
     
+    if not assigned_master_id:
+        raise ValueError("Мастер не назначен")
+    
     # Получаем информацию об услугах
     services_info = []
-    total_cost = 0
+    calculated_total_cost = 0
     total_duration = 0
     
     for service_id in selected_services:
@@ -367,21 +415,15 @@ async def build_order_summary(data: dict, db_queries: DatabaseQueries) -> tuple:
                 'price': service['price'],
                 'duration': service['duration_minutes']
             })
-            total_cost += service['price']
+            calculated_total_cost += service['price']
             total_duration += service['duration_minutes']
     
     if not services_info:
         raise ValueError("Выбранные услуги не найдены в базе данных")
     
-    # Выбираем случайного мастера
-    masters = await db_queries.get_masters()
-    master = random.choice(masters) if masters else None
-    
-    if master:
-        # Обновляем данные состояния
-        from aiogram.fsm.context import FSMContext
-        # Это нужно будет передать отдельно в вызывающих функциях
-        # await state.update_data(master_id=master['id'], total_cost=total_cost)
+    # Используем сохраненную стоимость, но если её нет - вычисляем
+    if total_cost == 0:
+        total_cost = calculated_total_cost
     
     # Форматируем дату
     formatted_date = datetime.strptime(order_date, '%Y-%m-%d').strftime('%d.%m.%Y')
@@ -395,7 +437,7 @@ async def build_order_summary(data: dict, db_queries: DatabaseQueries) -> tuple:
     text += f"\n📅 **Дата:** {formatted_date}"
     text += f"\n🕐 **Время:** {order_time}"
     text += f"\n📍 **Адрес:** {order_address}"
-    text += f"\n👨‍🔧 **Мастер:** {master['name'] if master else 'Не назначен'}"
+    text += f"\n👨‍🔧 **Мастер:** {assigned_master_name}"
     text += f"\n⏱️ **Примерное время работы:** {total_duration} мин"
     text += f"\n💰 **Общая стоимость:** {total_cost}₽"
     
@@ -410,26 +452,20 @@ async def final_confirm_order(callback: CallbackQuery, state: FSMContext, db_que
     try:
         data = await state.get_data()
         
-        # Получаем мастера и обновляем данные
-        masters = await db_queries.get_masters()
-        master = random.choice(masters) if masters else None
+        # Используем уже назначенного мастера из state
+        assigned_master_id = data.get('assigned_master_id')
+        assigned_master_name = data.get('assigned_master_name')
+        total_cost = data.get('total_cost', 0)
         
-        if not master:
-            await callback.answer("Ошибка: нет доступных мастеров")
+        if not assigned_master_id or not assigned_master_name:
+            await callback.answer("Ошибка: мастер не назначен")
             return
         
-        # Вычисляем стоимость
-        selected_services = data.get('selected_services', set())
-        total_cost = 0
-        for service_id in selected_services:
-            service = await db_queries.get_service_by_id(service_id)
-            if service:
-                total_cost += service['price']
-        
         # Валидация данных заказа
+        selected_services = data.get('selected_services', set())
         is_valid, error_msg, validated_data = ValidationService.validate_order_data(
             user_id=callback.from_user.id,
-            master_id=master['id'],
+            master_id=assigned_master_id,
             address=data.get('order_address'),
             date_str=data.get('order_date'),
             time_str=data.get('order_time'),
@@ -455,13 +491,13 @@ async def final_confirm_order(callback: CallbackQuery, state: FSMContext, db_que
             await callback.message.edit_text(
                 f"🎉 **Заказ успешно создан!**\n\n"
                 f"**Номер заказа:** №{order_id}\n\n"
-                f"Мастер **{master['name']}** свяжется с вами в указанное время.\n"
+                f"Мастер **{assigned_master_name}** свяжется с вами в указанное время.\n"
                 f"Спасибо за обращение!\n\n"
                 "Вы можете отслеживать статус заказа в разделе «История заказов».",
                 parse_mode='Markdown'
             )
             
-            logging.info(f"Создан заказ {order_id} для пользователя {callback.from_user.id}")
+            logging.info(f"Создан заказ {order_id} для пользователя {callback.from_user.id} с мастером {assigned_master_name} (ID: {assigned_master_id})")
         else:
             await callback.message.edit_text(
                 "❌ Произошла ошибка при создании заказа.\n"
@@ -474,6 +510,53 @@ async def final_confirm_order(callback: CallbackQuery, state: FSMContext, db_que
     except Exception as e:
         logging.error(f"Ошибка в final_confirm_order: {e}")
         await callback.answer("Ошибка при создании заказа")
+
+
+# Обработчик для услуг ИИ (если есть)
+@orders_router.callback_query(F.data == "add_ai_services")
+async def add_ai_recommended_services(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
+    """Добавление рекомендованных ИИ услуг в заказ"""
+    try:
+        data = await state.get_data()
+        recommended_services = data.get('recommended_services', [])
+        
+        # Подробное логирование для отладки
+        logging.info(f"=== ОТЛАДКА add_ai_services ===")
+        logging.info(f"Все данные state: {data}")
+        logging.info(f"recommended_services из state: {recommended_services}")
+        logging.info(f"Тип recommended_services: {type(recommended_services)}")
+        
+        if not recommended_services:
+            logging.error("❌ recommended_services пустой или None")
+            await callback.answer("Ошибка: нет рекомендованных услуг")
+            return
+        
+        # Сохраняем выбранные услуги как set для совместимости с остальной логикой заказов
+        await state.update_data(selected_services=set(recommended_services))
+        
+        # Назначаем мастера сразу для ИИ услуг
+        await assign_master_to_order(state, db_queries)
+        
+        # Переходим к выбору времени
+        from ..handlers.orders import OrderStates
+        await state.set_state(OrderStates.selecting_time)
+        
+        keyboard = get_time_slots_keyboard()
+        await callback.message.edit_text(
+            f"🕐 **Выбор времени**\n\n"
+            f"**Выбранные услуги от ИИ:**\n"
+            f"Количество услуг: {len(recommended_services)}\n\n"
+            f"Выберите удобное время для визита мастера:",
+            reply_markup=keyboard,
+            parse_mode='Markdown'
+        )
+        
+        logging.info(f"✅ Успешно добавлены услуги ИИ в заказ: {recommended_services}")
+        await callback.answer("✅ Услуги добавлены в заказ!")
+    
+    except Exception as e:
+        logging.error(f"Ошибка в add_ai_recommended_services: {e}")
+        await callback.answer("Ошибка при добавлении услуг в заказ")
 
 
 # === НАВИГАЦИЯ ===
