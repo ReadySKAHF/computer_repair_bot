@@ -70,7 +70,7 @@ async def start_order_creation(message: Message, state: FSMContext, db_queries: 
         
         # Инициализируем состояние заказа
         await state.update_data(
-            selected_services=set(),
+            selected_services=[],  # Используем list вместо set для совместимости с aiogram state
             page=0,
             total_pages=total_pages
         )
@@ -118,22 +118,16 @@ async def handle_services_pagination(callback: CallbackQuery, state: FSMContext,
     """Обработка пагинации услуг"""
     try:
         data = await state.get_data()
-        selected_services = data.get('selected_services', set())
+        selected_services = data.get('selected_services', [])
         
+        logging.info(f"=== ПАГИНАЦИЯ НА СТРАНИЦУ {page} ===")
+        logging.info(f"Выбранные услуги в state: {selected_services}")
+        
+        # Обновляем номер страницы
         await state.update_data(page=page)
         
-        services = await db_queries.get_services(page, LIMITS['MAX_SERVICES_PER_PAGE'])
-        total_services = await db_queries.get_services_count()
-        total_pages = (total_services + LIMITS['MAX_SERVICES_PER_PAGE'] - 1) // LIMITS['MAX_SERVICES_PER_PAGE']
-        
-        keyboard = get_services_keyboard(services, page, total_pages, selected_services, "order_service")
-        
-        text = f"{SECTION_DESCRIPTIONS['ORDER_CREATION']}\n\n"
-        text += f"**Страница {page + 1} из {total_pages}**\n\n"
-        if selected_services:
-            text += f"**Выбрано услуг:** {len(selected_services)}"
-        
-        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        # Используем единую функцию обновления страницы
+        await refresh_services_page(callback, state, db_queries)
         await callback.answer()
     
     except Exception as e:
@@ -141,32 +135,33 @@ async def handle_services_pagination(callback: CallbackQuery, state: FSMContext,
         await callback.answer("Ошибка при переходе между страницами")
 
 
-async def toggle_service_selection(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, service_id: int):
-    """Переключение выбора услуги"""
+async def refresh_services_page(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
+    """Принудительное обновление текущей страницы услуг"""
     try:
         data = await state.get_data()
-        selected_services = data.get('selected_services', set())
+        selected_services = data.get('selected_services', [])
         page = data.get('page', 0)
         
-        # Проверяем лимит услуг
-        if service_id not in selected_services and len(selected_services) >= LIMITS['MAX_SERVICES_PER_ORDER']:
-            await callback.answer(f"Максимальное количество услуг: {LIMITS['MAX_SERVICES_PER_ORDER']}")
-            return
-        
-        # Переключаем выбор
-        if service_id in selected_services:
-            selected_services.remove(service_id)
+        # Принудительно преобразуем в правильный формат
+        if isinstance(selected_services, list):
+            selected_services_set = set(selected_services)
         else:
-            selected_services.add(service_id)
+            selected_services_set = set()
+            # Если это не list, пересохраняем как list
+            await state.update_data(selected_services=[])
         
-        await state.update_data(selected_services=selected_services)
+        logging.info(f"=== ОБНОВЛЕНИЕ СТРАНИЦЫ {page} ===")
+        logging.info(f"State содержит: {data}")
+        logging.info(f"Selected services: {selected_services} (тип: {type(selected_services)})")
+        logging.info(f"Как set: {selected_services_set}")
         
-        # Обновляем клавиатуру
         services = await db_queries.get_services(page, LIMITS['MAX_SERVICES_PER_PAGE'])
         total_services = await db_queries.get_services_count()
         total_pages = (total_services + LIMITS['MAX_SERVICES_PER_PAGE'] - 1) // LIMITS['MAX_SERVICES_PER_PAGE']
         
-        keyboard = get_services_keyboard(services, page, total_pages, selected_services, "order_service")
+        logging.info(f"Загружено {len(services)} услуг для страницы {page}")
+        
+        keyboard = get_services_keyboard(services, page, total_pages, selected_services_set, "order_service")
         
         text = f"{SECTION_DESCRIPTIONS['ORDER_CREATION']}\n\n"
         text += f"**Страница {page + 1} из {total_pages}**\n\n"
@@ -174,6 +169,58 @@ async def toggle_service_selection(callback: CallbackQuery, state: FSMContext, d
             text += f"**Выбрано услуг:** {len(selected_services)}"
         
         await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        
+    except Exception as e:
+        logging.error(f"Ошибка в refresh_services_page: {e}")
+        raise
+
+
+async def toggle_service_selection(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, service_id: int):
+    """Переключение выбора услуги"""
+    try:
+        data = await state.get_data()
+        selected_services = data.get('selected_services', [])
+        page = data.get('page', 0)
+        
+        # ВАЖНО: Преобразуем в set, если это list (может происходить при сериализации state)
+        if isinstance(selected_services, list):
+            selected_services_set = set(selected_services)
+        elif not isinstance(selected_services, set):
+            selected_services_set = set()
+        else:
+            selected_services_set = selected_services.copy()
+        
+        logging.info(f"=== ПЕРЕКЛЮЧЕНИЕ УСЛУГИ {service_id} ===")
+        logging.info(f"До изменения - выбранные услуги: {selected_services}")
+        logging.info(f"Тип данных: {type(selected_services)}")
+        logging.info(f"Как set: {selected_services_set}")
+        
+        # Проверяем лимит услуг
+        if service_id not in selected_services_set and len(selected_services_set) >= LIMITS['MAX_SERVICES_PER_ORDER']:
+            await callback.answer(f"Максимальное количество услуг: {LIMITS['MAX_SERVICES_PER_ORDER']}")
+            return
+        
+        # Переключаем выбор
+        if service_id in selected_services_set:
+            selected_services_set.remove(service_id)
+            logging.info(f"✅ Убрана услуга {service_id}")
+        else:
+            selected_services_set.add(service_id)
+            logging.info(f"✅ Добавлена услуга {service_id}")
+        
+        # Преобразуем в list для сохранения в state и СРАЗУ сохраняем
+        selected_services_list = list(selected_services_set)
+        await state.update_data(selected_services=selected_services_list)
+        
+        logging.info(f"После изменения - сохранено в state: {selected_services_list}")
+        
+        # Проверяем, что данные действительно сохранились
+        verification_data = await state.get_data()
+        verification_services = verification_data.get('selected_services', [])
+        logging.info(f"Проверка сохранения: {verification_services}")
+        
+        # Принудительно обновляем страницу
+        await refresh_services_page(callback, state, db_queries)
         await callback.answer()
     
     except Exception as e:
@@ -186,7 +233,13 @@ async def confirm_services_selection(callback: CallbackQuery, state: FSMContext)
     """Подтверждение выбора услуг и переход к времени"""
     try:
         data = await state.get_data()
-        selected_services = data.get('selected_services', set())
+        selected_services = data.get('selected_services', [])
+        
+        # Преобразуем в список, если это не список
+        if isinstance(selected_services, set):
+            selected_services = list(selected_services)
+        
+        logging.info(f"Подтверждение услуг: {selected_services}")
         
         if not selected_services:
             await callback.answer("Выберите хотя бы одну услугу!")
@@ -332,6 +385,7 @@ async def assign_master_to_order(state: FSMContext, db_queries: DatabaseQueries)
         
         # Если мастер уже назначен, не меняем
         if data.get('assigned_master_id'):
+            logging.info("Мастер уже назначен, пропускаем")
             return
         
         # Получаем всех мастеров и выбираем случайного
@@ -340,12 +394,20 @@ async def assign_master_to_order(state: FSMContext, db_queries: DatabaseQueries)
             master = random.choice(masters)
             
             # Вычисляем общую стоимость
-            selected_services = data.get('selected_services', set())
+            selected_services = data.get('selected_services', [])
+            
+            # Преобразуем в list, если это set
+            if isinstance(selected_services, set):
+                selected_services = list(selected_services)
+            
+            logging.info(f"Вычисление стоимости для услуг: {selected_services}")
+            
             total_cost = 0
             for service_id in selected_services:
                 service = await db_queries.get_service_by_id(service_id)
                 if service:
                     total_cost += service['price']
+                    logging.info(f"Добавлена услуга {service_id}: {service['name']} - {service['price']}₽")
             
             # Сохраняем назначенного мастера и стоимость
             await state.update_data(
@@ -354,7 +416,7 @@ async def assign_master_to_order(state: FSMContext, db_queries: DatabaseQueries)
                 total_cost=total_cost
             )
             
-            logging.info(f"Назначен мастер {master['name']} (ID: {master['id']}) для заказа")
+            logging.info(f"Назначен мастер {master['name']} (ID: {master['id']}) для заказа на сумму {total_cost}₽")
     
     except Exception as e:
         logging.error(f"Ошибка в assign_master_to_order: {e}")
@@ -388,13 +450,20 @@ async def show_order_summary_after_address(message: Message, state: FSMContext, 
 async def build_order_summary(state: FSMContext, db_queries: DatabaseQueries) -> tuple:
     """Построение резюме заказа с уже назначенным мастером"""
     data = await state.get_data()
-    selected_services = data.get('selected_services', set())
+    selected_services = data.get('selected_services', [])
     order_time = data.get('order_time')
     order_date = data.get('order_date')
     order_address = data.get('order_address')
     assigned_master_id = data.get('assigned_master_id')
     assigned_master_name = data.get('assigned_master_name')
     total_cost = data.get('total_cost', 0)
+    
+    # Преобразуем в list, если это set
+    if isinstance(selected_services, set):
+        selected_services = list(selected_services)
+    
+    logging.info(f"Построение резюме для услуг: {selected_services}")
+    logging.info(f"Назначенный мастер: {assigned_master_name} (ID: {assigned_master_id})")
     
     if not selected_services:
         raise ValueError("Не выбраны услуги для заказа")
@@ -417,6 +486,7 @@ async def build_order_summary(state: FSMContext, db_queries: DatabaseQueries) ->
             })
             calculated_total_cost += service['price']
             total_duration += service['duration_minutes']
+            logging.info(f"Добавлена в резюме услуга: {service['name']} - {service['price']}₽")
     
     if not services_info:
         raise ValueError("Выбранные услуги не найдены в базе данных")
@@ -424,6 +494,8 @@ async def build_order_summary(state: FSMContext, db_queries: DatabaseQueries) ->
     # Используем сохраненную стоимость, но если её нет - вычисляем
     if total_cost == 0:
         total_cost = calculated_total_cost
+    
+    logging.info(f"Итоговая стоимость: {total_cost}₽, продолжительность: {total_duration} мин")
     
     # Форматируем дату
     formatted_date = datetime.strptime(order_date, '%Y-%m-%d').strftime('%d.%m.%Y')
@@ -456,23 +528,37 @@ async def final_confirm_order(callback: CallbackQuery, state: FSMContext, db_que
         assigned_master_id = data.get('assigned_master_id')
         assigned_master_name = data.get('assigned_master_name')
         total_cost = data.get('total_cost', 0)
+        selected_services = data.get('selected_services', [])
+        
+        # Преобразуем в list, если это set
+        if isinstance(selected_services, set):
+            selected_services = list(selected_services)
+        
+        logging.info(f"Финальное подтверждение заказа:")
+        logging.info(f"- Мастер: {assigned_master_name} (ID: {assigned_master_id})")
+        logging.info(f"- Услуги: {selected_services}")
+        logging.info(f"- Стоимость: {total_cost}₽")
         
         if not assigned_master_id or not assigned_master_name:
             await callback.answer("Ошибка: мастер не назначен")
             return
         
+        if not selected_services:
+            await callback.answer("Ошибка: не выбраны услуги")
+            return
+        
         # Валидация данных заказа
-        selected_services = data.get('selected_services', set())
         is_valid, error_msg, validated_data = ValidationService.validate_order_data(
             user_id=callback.from_user.id,
             master_id=assigned_master_id,
             address=data.get('order_address'),
             date_str=data.get('order_date'),
             time_str=data.get('order_time'),
-            service_ids=list(selected_services)
+            service_ids=selected_services
         )
         
         if not is_valid:
+            logging.error(f"Валидация заказа не прошла: {error_msg}")
             await callback.answer(error_msg)
             return
         
@@ -497,12 +583,13 @@ async def final_confirm_order(callback: CallbackQuery, state: FSMContext, db_que
                 parse_mode='Markdown'
             )
             
-            logging.info(f"Создан заказ {order_id} для пользователя {callback.from_user.id} с мастером {assigned_master_name} (ID: {assigned_master_id})")
+            logging.info(f"✅ Создан заказ {order_id} для пользователя {callback.from_user.id} с мастером {assigned_master_name} (ID: {assigned_master_id})")
         else:
             await callback.message.edit_text(
                 "❌ Произошла ошибка при создании заказа.\n"
                 "Попробуйте еще раз или обратитесь в поддержку."
             )
+            logging.error("Не удалось создать заказ в БД")
         
         await state.clear()
         await callback.answer()
@@ -531,8 +618,8 @@ async def add_ai_recommended_services(callback: CallbackQuery, state: FSMContext
             await callback.answer("Ошибка: нет рекомендованных услуг")
             return
         
-        # Сохраняем выбранные услуги как set для совместимости с остальной логикой заказов
-        await state.update_data(selected_services=set(recommended_services))
+        # Сохраняем выбранные услуги как list для совместимости с остальной логикой заказов
+        await state.update_data(selected_services=list(recommended_services))
         
         # Назначаем мастера сразу для ИИ услуг
         await assign_master_to_order(state, db_queries)
@@ -566,22 +653,16 @@ async def back_to_services(callback: CallbackQuery, state: FSMContext, db_querie
     """Возврат к выбору услуг"""
     try:
         data = await state.get_data()
-        selected_services = data.get('selected_services', set())
+        selected_services = data.get('selected_services', [])
         page = data.get('page', 0)
         
-        services = await db_queries.get_services(page, LIMITS['MAX_SERVICES_PER_PAGE'])
-        total_services = await db_queries.get_services_count()
-        total_pages = (total_services + LIMITS['MAX_SERVICES_PER_PAGE'] - 1) // LIMITS['MAX_SERVICES_PER_PAGE']
+        logging.info(f"=== ВОЗВРАТ К УСЛУГАМ (СТРАНИЦА {page}) ===")
+        logging.info(f"Выбранные услуги из state: {selected_services}")
         
-        keyboard = get_services_keyboard(services, page, total_pages, selected_services, "order_service")
-        
-        text = f"{SECTION_DESCRIPTIONS['ORDER_CREATION']}\n\n"
-        text += f"**Страница {page + 1} из {total_pages}**\n\n"
-        if selected_services:
-            text += f"**Выбрано услуг:** {len(selected_services)}"
-        
-        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
         await state.set_state(OrderStates.selecting_services)
+        
+        # Используем единую функцию обновления страницы
+        await refresh_services_page(callback, state, db_queries)
         await callback.answer()
     
     except Exception as e:
