@@ -1,9 +1,9 @@
 """
-Обработчики профиля пользователя
+Обработчики профиля пользователя (обновленная версия)
 """
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -12,7 +12,8 @@ from ..services.validation_service import ValidationService
 from ..keyboards.main_menu import get_main_menu_keyboard
 from ..keyboards.profile_keyboards import (
     get_profile_keyboard, get_profile_edit_keyboard, 
-    get_order_history_keyboard, get_order_details_keyboard
+    get_order_history_keyboard, get_order_details_keyboard,
+    get_complete_order_keyboard
 )
 from ..utils.constants import (
     SECTION_DESCRIPTIONS, SUCCESS_MESSAGES, ORDER_STATUS_EMOJI, ORDER_STATUSES
@@ -268,30 +269,67 @@ async def process_new_address(message: Message, state: FSMContext, db_queries: D
         await state.clear()
 
 
-# === ИСТОРИЯ ЗАКАЗОВ ===
+# === ИСТОРИЯ ЗАКАЗОВ С ПАГИНАЦИЕЙ ===
 
 @profile_router.callback_query(F.data == "order_history")
-async def show_order_history(callback: CallbackQuery, db_queries: DatabaseQueries):
-    """Показ истории заказов"""
+async def show_order_history(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
+    """Показ истории заказов (первая страница)"""
+    await show_order_history_page(callback, state, db_queries, page=0)
+
+
+@profile_router.callback_query(F.data.startswith("order_history_page_"))
+async def show_order_history_page_handler(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
+    """Обработчик навигации по страницам истории заказов"""
     try:
-        orders = await db_queries.get_user_orders(callback.from_user.id, 20)
+        page = int(callback.data.split("_")[-1])
+        await show_order_history_page(callback, state, db_queries, page=page)
+    except (ValueError, IndexError) as e:
+        logging.error(f"Ошибка в show_order_history_page_handler: {e}")
+        await callback.answer("Ошибка навигации")
+
+
+async def show_order_history_page(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, page: int = 0):
+    """Показ конкретной страницы истории заказов"""
+    try:
+        orders_per_page = 5
+        offset = page * orders_per_page
+        
+        # Получаем заказы с запасом для определения наличия следующей страницы
+        orders = await db_queries.get_user_orders(callback.from_user.id, orders_per_page + 1, offset)
+        
+        # Сохраняем текущую страницу в state
+        await state.update_data(order_history_page=page)
         
         if not orders:
-            text = f"{SECTION_DESCRIPTIONS['ORDER_HISTORY']}"
-            text += "У вас пока нет заказов.\n"
-            text += "Сделайте первый заказ прямо сейчас!"
-            
-            from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
-                [InlineKeyboardButton(text="🔙 Назад к профилю", callback_data="back_to_profile")]
-            ])
+            if page == 0:
+                # Нет заказов вообще
+                text = f"{SECTION_DESCRIPTIONS['ORDER_HISTORY']}"
+                text += "У вас пока нет заказов.\n"
+                text += "Сделайте первый заказ прямо сейчас!"
+                
+                keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
+                    [InlineKeyboardButton(text="🔙 Назад к профилю", callback_data="back_to_profile")]
+                ])
+            else:
+                # Страница пустая, возвращаемся на предыдущую
+                await show_order_history_page(callback, state, db_queries, page=max(0, page-1))
+                return
         else:
-            text = f"{SECTION_DESCRIPTIONS['ORDER_HISTORY']}"
-            text += f"**Всего заказов:** {len(orders)}\n\n"
+            # Определяем есть ли следующая страница
+            has_next_page = len(orders) > orders_per_page
+            current_page_orders = orders[:orders_per_page]
             
-            # Показываем последние 5 заказов
-            for order in orders[:5]:
+            # Подсчитываем общее количество заказов для отображения
+            all_orders = await db_queries.get_user_orders(callback.from_user.id, 1000)  # Получаем все для подсчета
+            total_orders = len(all_orders) if all_orders else 0
+            
+            text = f"{SECTION_DESCRIPTIONS['ORDER_HISTORY']}"
+            text += f"**Всего заказов:** {total_orders}\n"
+            text += f"**Страница:** {page + 1}\n\n"
+            
+            # Показываем заказы текущей страницы
+            for order in current_page_orders:
                 order_id = order['id']
                 date = order['order_date']
                 time = order['order_time']
@@ -310,16 +348,18 @@ async def show_order_history(callback: CallbackQuery, db_queries: DatabaseQuerie
                 text += f"💰 Стоимость: {cost}₽\n"
                 text += f"📊 Статус: {status_text}\n\n"
             
-            if len(orders) > 5:
-                text += f"... и еще {len(orders) - 5} заказов"
-            
-            keyboard = get_order_history_keyboard(orders)
+            keyboard = get_order_history_keyboard(
+                orders=current_page_orders, 
+                page=page, 
+                has_prev=(page > 0), 
+                has_next=has_next_page
+            )
         
         await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
         await callback.answer()
     
     except Exception as e:
-        logging.error(f"Ошибка в show_order_history: {e}")
+        logging.error(f"Ошибка в show_order_history_page: {e}")
         await callback.answer("Ошибка при загрузке истории заказов")
 
 
@@ -378,6 +418,73 @@ async def show_order_details(callback: CallbackQuery, db_queries: DatabaseQuerie
     except Exception as e:
         logging.error(f"Критическая ошибка в show_order_details: {e}")
         await callback.answer("Произошла ошибка")
+
+
+# === ЗАВЕРШЕНИЕ ЗАКАЗА ===
+
+@profile_router.callback_query(F.data.startswith("complete_order_"))
+async def complete_order_request(callback: CallbackQuery, db_queries: DatabaseQueries):
+    """Запрос на завершение заказа"""
+    try:
+        order_id = int(callback.data.split("_")[2])
+        order = await db_queries.get_order_by_id(order_id)
+        
+        if not order or order['user_id'] != callback.from_user.id:
+            await callback.answer("Заказ не найден")
+            return
+        
+        if order['status'] not in ['confirmed', 'in_progress']:
+            await callback.answer("Этот заказ нельзя завершить")
+            return
+        
+        text = f"✅ **Завершение заказа №{order_id}**\n\n"
+        text += "Работы по заказу выполнены?\n\n"
+        text += f"**Дата:** {order['order_date']} в {order['order_time']}\n"
+        text += f"**Мастер:** {order['master_name']}\n"
+        text += f"**Стоимость:** {order['total_cost']}₽\n\n"
+        text += "После завершения вы сможете оставить отзыв о работе мастера."
+        
+        keyboard = get_complete_order_keyboard(order_id)
+        
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в complete_order_request: {e}")
+        await callback.answer("Ошибка при запросе завершения")
+
+
+@profile_router.callback_query(F.data.startswith("confirm_complete_"))
+async def confirm_complete_order(callback: CallbackQuery, db_queries: DatabaseQueries):
+    """Подтверждение завершения заказа"""
+    try:
+        order_id = int(callback.data.split("_")[2])
+        
+        # Обновляем статус заказа
+        success = await db_queries.update_order_status(order_id, 'completed')
+        
+        if success:
+            await callback.message.edit_text(
+                f"✅ **Заказ №{order_id} завершен**\n\n"
+                "Спасибо за использование нашего сервиса!\n"
+                "Теперь вы можете оставить отзыв о работе мастера.\n\n"
+                "💡 **Совет:** Ваш отзыв поможет другим клиентам сделать правильный выбор!",
+                parse_mode='Markdown'
+            )
+            logging.info(f"Пользователь {callback.from_user.id} завершил заказ {order_id}")
+        else:
+            await callback.message.edit_text(
+                "❌ **Ошибка завершения заказа**\n\n"
+                "Не удалось завершить заказ.\n"
+                "Обратитесь в поддержку для решения вопроса.",
+                parse_mode='Markdown'
+            )
+        
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в confirm_complete_order: {e}")
+        await callback.answer("Ошибка при завершении заказа")
 
 
 # === ОТМЕНА ЗАКАЗА ===
@@ -473,3 +580,67 @@ async def back_to_profile(callback: CallbackQuery, user):
     except Exception as e:
         logging.error(f"Ошибка в back_to_profile: {e}")
         await callback.answer("Ошибка при возврате к профилю")
+
+
+@profile_router.callback_query(F.data == "back_to_order_history")
+async def back_to_order_history(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries):
+    """Возврат к истории заказов"""
+    try:
+        # Получаем сохраненную страницу из state
+        data = await state.get_data()
+        page = data.get('order_history_page', 0)
+        
+        await show_order_history_page(callback, state, db_queries, page=page)
+    
+    except Exception as e:
+        logging.error(f"Ошибка в back_to_order_history: {e}")
+        # В случае ошибки показываем первую страницу
+        await show_order_history_page(callback, state, db_queries, page=0)
+
+
+# Команда для быстрого тестирования
+@profile_router.message(F.text == "/admin_test_orders")
+async def admin_test_orders(message: Message, db_queries: DatabaseQueries):
+    """Админская команда для тестирования заказов"""
+    admin_ids = [123456789, 987654321]  # Ваши админские ID
+    
+    if message.from_user.id not in admin_ids:
+        await message.answer("❌ Доступ запрещен")
+        return
+    
+    try:
+        # Получаем последние заказы пользователя
+        orders = await db_queries.get_user_orders(message.from_user.id, 5)
+        
+        if not orders:
+            await message.answer("У вас нет заказов для тестирования")
+            return
+        
+        text = "🔧 **Админ: Управление заказами**\n\n"
+        
+        for order in orders:
+            order_id = order['id']
+            status = order['status']
+            date = order['order_date']
+            
+            text += f"**Заказ №{order_id}** ({date})\n"
+            text += f"Статус: {status}\n\n"
+        
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+        
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(
+                text="📋 История заказов с админкой", 
+                callback_data="admin_order_history"
+            )],
+            [InlineKeyboardButton(
+                text="🔙 Главное меню", 
+                callback_data="main_menu"
+            )]
+        ])
+        
+        await message.answer(text, reply_markup=keyboard, parse_mode='Markdown')
+    
+    except Exception as e:
+        logging.error(f"Ошибка в admin_test_orders: {e}")
+        await message.answer("Ошибка при загрузке админ панели")

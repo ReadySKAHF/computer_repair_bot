@@ -360,3 +360,32 @@ class DatabaseQueries:
             stats['support_requests_today'] = (await cursor.fetchone())[0]
             
             return stats
+        
+@handle_db_errors
+async def get_user_orders(self, user_id: int, limit: int = 20, offset: int = 0) -> List[Dict[str, Any]]:
+    """
+    Получение заказов пользователя с поддержкой пагинации
+    
+    Args:
+        user_id: ID пользователя
+        limit: Количество заказов для получения
+        offset: Смещение для пагинации
+    """
+    async with get_db_connection(self.db_path) as db:
+        cursor = await db.execute("""
+            SELECT 
+                o.id, o.order_date, o.order_time, o.total_cost, o.status,
+                m.name as master_name,
+                COALESCE(GROUP_CONCAT(s.name, ', '), 'Услуги не указаны') as services
+            FROM orders o
+            JOIN masters m ON o.master_id = m.id
+            LEFT JOIN order_services os ON o.id = os.order_id
+            LEFT JOIN services s ON os.service_id = s.id
+            WHERE o.user_id = ?
+            GROUP BY o.id, o.order_date, o.order_time, o.total_cost, o.status, m.name
+            ORDER BY o.created_at DESC
+            LIMIT ? OFFSET ?
+        """, (user_id, limit, offset))
+        
+        rows = await cursor.fetchall()
+        return [dict(row) for row in rows]

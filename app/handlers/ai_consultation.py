@@ -3,7 +3,7 @@
 """
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -282,7 +282,6 @@ async def show_ai_settings(callback: CallbackQuery, ai_service: AIConsultationSe
             text += "❌ Проблемы с ИИ сервисом\n"
             text += "Пользователи получают рекомендации на основе ключевых слов"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🔄 Проверить статус", callback_data="check_ai_status")],
             [InlineKeyboardButton(text="🔙 Главное меню", callback_data="main_menu")]
@@ -334,7 +333,6 @@ async def show_problem_examples(callback: CallbackQuery, state: FSMContext):
         text += "компьютер сам открывает сайты.\n\n"
         text += "**Чем подробнее описание, тем точнее рекомендации!**"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🤖 Начать консультацию", callback_data="new_ai_consultation")],
             [InlineKeyboardButton(text="🔙 Главное меню", callback_data="main_menu")]

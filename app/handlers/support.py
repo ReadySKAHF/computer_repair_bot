@@ -3,7 +3,7 @@
 """
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -161,7 +161,6 @@ async def faq_how_to_order(callback: CallbackQuery):
     text += "• Мастер свяжется с вами для уточнения деталей\n"
     text += "• Отменить заказ можно до начала работы"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
@@ -188,7 +187,6 @@ async def faq_payment(callback: CallbackQuery):
     text += "• В случае некачественной работы - переделаем бесплатно\n"
     text += "• Предоставляем чек или квитанцию"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="📋 Описание услуг", callback_data="view_services")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
@@ -217,7 +215,6 @@ async def faq_timing(callback: CallbackQuery):
     text += "• Работаем с 10:00 до 22:00\n"
     text += "• В выходные дни по предварительной записи"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
@@ -246,7 +243,6 @@ async def faq_warranty(callback: CallbackQuery):
     text += "• Устранение недочетов за наш счет\n"
     text += "• Компенсация при доказанной вине мастера"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="💬 Связаться с поддержкой", callback_data="write_support")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
@@ -275,7 +271,6 @@ async def faq_ai_consultation(callback: CallbackQuery):
     text += "• Опишите, что вы уже пробовали делать\n\n"
     text += "**Точность:** 85-90% правильных рекомендаций"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🤖 Попробовать ИИ консультацию", callback_data="new_ai_consultation")],
         [InlineKeyboardButton(text="💡 Примеры проблем", callback_data="ai_examples")],
@@ -304,7 +299,6 @@ async def show_contacts(callback: CallbackQuery):
     text += "**Адрес офиса:**\n"
     text += "📍 г. Москва, ул. Примерная, д. 1"
     
-    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="💬 Написать в поддержку", callback_data="write_support")],
         [InlineKeyboardButton(text="🔙 К поддержке", callback_data="support")]
@@ -339,7 +333,6 @@ async def show_support_statistics(callback: CallbackQuery, db_queries: DatabaseQ
                 text += f"{i}. **{user_name}** _{created_at}_\n"
                 text += f"   {message_preview}\n\n"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🔙 К поддержке", callback_data="support")]
         ])

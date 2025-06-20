@@ -89,6 +89,94 @@ class RepairBot:
             self.dp.include_router(ai_router)
             self.dp.include_router(support_router)
             
+            # Обработчик для make_order callback
+            @self.dp.callback_query(F.data == "make_order")
+            async def handle_make_order_callback(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, user):
+                """Обработчик кнопки 'Сделать заказ' из inline клавиатур"""
+                if not user:
+                    await callback.answer("❌ Для создания заказа необходимо зарегистрироваться!")
+                    return
+                
+                try:
+                    # Удаляем текущее сообщение
+                    await callback.message.delete()
+                    
+                    # Отправляем новое сообщение с ReplyKeyboardMarkup  
+                    await callback.message.answer(
+                        "🛠️ **Создание заказа**\n\nИспользуйте кнопку «🛠️ Сделать заказ» в главном меню для создания заказа.",
+                        reply_markup=get_main_menu_keyboard(),
+                        parse_mode='Markdown'
+                    )
+                    await callback.answer()
+                except Exception as e:
+                    logging.error(f"Ошибка в handle_make_order_callback: {e}")
+                    await callback.answer("Используйте кнопку '🛠️ Сделать заказ' в главном меню")
+            
+            # Админские команды для тестирования
+            @self.dp.message(F.text.startswith("/admin"))
+            async def handle_admin_commands(message: Message, db_queries: DatabaseQueries):
+                """Админские команды для тестирования"""
+                # Добавьте ваши Telegram ID здесь для безопасности
+                admin_ids = [716639474, 1003589165]  # ЗАМЕНИТЕ НА ВАШИ ID
+                
+                if message.from_user.id not in admin_ids:
+                    await message.answer("❌ Доступ запрещен")
+                    return
+                
+                try:
+                    command_parts = message.text.split()
+                    command = command_parts[0]
+                    
+                    if command == "/admin_complete":
+                        # Команда: /admin_complete 12 (завершить заказ №12)
+                        if len(command_parts) < 2:
+                            await message.answer("Использование: /admin_complete <order_id>")
+                            return
+                        
+                        order_id = int(command_parts[1])
+                        success = await db_queries.update_order_status(order_id, 'completed')
+                        
+                        if success:
+                            await message.answer(f"✅ Заказ №{order_id} переведен в статус 'completed'")
+                        else:
+                            await message.answer(f"❌ Ошибка обновления заказа №{order_id}")
+                    
+                    elif command == "/admin_orders":
+                        # Показать все заказы пользователя
+                        orders = await db_queries.get_user_orders(message.from_user.id, 10)
+                        
+                        if not orders:
+                            await message.answer("У вас нет заказов")
+                            return
+                        
+                        text = "📋 **Ваши заказы:**\n\n"
+                        for order in orders:
+                            order_id = order['id']
+                            status = order['status']
+                            date = order['order_date']
+                            text += f"№{order_id} - {status} ({date})\n"
+                        
+                        text += f"\n💡 Для завершения заказа используйте:\n`/admin_complete {orders[0]['id']}`"
+                        
+                        await message.answer(text, parse_mode='Markdown')
+                    
+                    elif command == "/admin_help":
+                        await message.answer(
+                            "🔧 **Админские команды:**\n\n"
+                            "`/admin_orders` - показать ваши заказы\n"
+                            "`/admin_complete <id>` - завершить заказ\n"
+                            "`/admin_help` - эта справка\n\n"
+                            "**Пример:** `/admin_complete 12`",
+                            parse_mode='Markdown'
+                        )
+                    
+                    else:
+                        await message.answer("❓ Неизвестная команда. Используйте `/admin_help`")
+                
+                except Exception as e:
+                    logging.error(f"Ошибка в admin командах: {e}")
+                    await message.answer(f"❌ Ошибка: {e}")
+            
             # Создаем роутер для общих обработчиков (должен быть последним)
             general_router = Router()
             

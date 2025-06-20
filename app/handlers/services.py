@@ -3,7 +3,7 @@
 """
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 
 from ..database.queries import DatabaseQueries
@@ -365,9 +365,7 @@ async def show_popular_services(callback: CallbackQuery, db_queries: DatabaseQue
         
         text += "Выберите услуги из каталога для создания заказа!"
         
-        # Можно добавить инлайн-клавиатуру с быстрыми действиями
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-        
+        # Можно добавить инлайн-клавиатуру с быстрыми действиями        
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
             [InlineKeyboardButton(text="📋 Полный каталог", callback_data="view_all_services")],

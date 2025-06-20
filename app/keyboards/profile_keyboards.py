@@ -1,5 +1,5 @@
 """
-Клавиатуры для профиля пользователя
+Клавиатуры для профиля пользователя (обновленная версия)
 """
 from typing import List, Dict
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -48,17 +48,21 @@ def get_profile_edit_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def get_order_history_keyboard(orders: List[Dict] = None) -> InlineKeyboardMarkup:
+def get_order_history_keyboard(orders: List[Dict] = None, page: int = 0, 
+                              has_prev: bool = False, has_next: bool = False) -> InlineKeyboardMarkup:
     """
-    Клавиатура истории заказов
+    Клавиатура истории заказов с пагинацией
     
     Args:
         orders: Список заказов пользователя
+        page: Текущая страница (начиная с 0)
+        has_prev: Есть ли предыдущая страница
+        has_next: Есть ли следующая страница
     """
     keyboard = []
     
     if orders:
-        # Показываем последние 5 заказов как кнопки
+        # Показываем заказы как кнопки (максимум 5)
         for order in orders[:5]:
             order_id = order['id']
             date = order['order_date']
@@ -70,12 +74,30 @@ def get_order_history_keyboard(orders: List[Dict] = None) -> InlineKeyboardMarku
                 callback_data=f"order_details_{order_id}"
             )])
         
-        # Если заказов больше 5, добавляем кнопку "Показать все"
-        if len(orders) > 5:
+        # Кнопки навигации по страницам
+        nav_buttons = []
+        if has_prev:
+            nav_buttons.append(InlineKeyboardButton(
+                text="⬅️ Предыдущие", 
+                callback_data=f"order_history_page_{page - 1}"
+            ))
+        
+        if has_next:
+            nav_buttons.append(InlineKeyboardButton(
+                text="➡️ Следующие", 
+                callback_data=f"order_history_page_{page + 1}"
+            ))
+        
+        if nav_buttons:
+            keyboard.append(nav_buttons)
+        
+        # Информация о странице (если есть навигация)
+        if has_prev or has_next:
             keyboard.append([InlineKeyboardButton(
-                text="📋 Показать все заказы", 
-                callback_data="show_all_orders"
+                text=f"📄 Страница {page + 1}", 
+                callback_data="current_page"  # Нефункциональная кнопка
             )])
+        
     else:
         # Если заказов нет
         keyboard.append([InlineKeyboardButton(
@@ -210,7 +232,7 @@ def get_faq_keyboard() -> InlineKeyboardMarkup:
 
 def get_order_details_keyboard(order_id: int, order_status: str) -> InlineKeyboardMarkup:
     """
-    Клавиатура деталей заказа
+    Клавиатура деталей заказа с поддержкой завершения
     
     Args:
         order_id: ID заказа
@@ -224,6 +246,18 @@ def get_order_details_keyboard(order_id: int, order_status: str) -> InlineKeyboa
             text="❌ Отменить заказ", 
             callback_data=f"cancel_order_{order_id}"
         )])
+    elif order_status in ['confirmed', 'in_progress']:
+        # Можно и отменить и завершить
+        keyboard.append([
+            InlineKeyboardButton(
+                text="✅ Завершить заказ", 
+                callback_data=f"complete_order_{order_id}"
+            ),
+            InlineKeyboardButton(
+                text="❌ Отменить заказ", 
+                callback_data=f"cancel_order_{order_id}"
+            )
+        ])
     elif order_status == 'completed':
         keyboard.append([InlineKeyboardButton(
             text="✍️ Оставить отзыв", 
@@ -242,10 +276,27 @@ def get_order_details_keyboard(order_id: int, order_status: str) -> InlineKeyboa
         )],
         [InlineKeyboardButton(
             text="🔙 К истории заказов", 
-            callback_data=CALLBACK_DATA['ORDER_HISTORY']
+            callback_data="back_to_order_history"
         )]
     ])
     
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def get_complete_order_keyboard(order_id: int) -> InlineKeyboardMarkup:
+    """Клавиатура подтверждения завершения заказа"""
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                text="✅ Да, завершить", 
+                callback_data=f"confirm_complete_{order_id}"
+            ),
+            InlineKeyboardButton(
+                text="❌ Нет, продолжить", 
+                callback_data=f"order_details_{order_id}"
+            )
+        ]
+    ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 

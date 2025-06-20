@@ -109,3 +109,560 @@
 2025-06-20 06:17:51,239 - root - INFO - ИИ рекомендовал услуги: [1, 2, 3, 1, 2]
 2025-06-20 06:17:51,393 - root - ERROR - Ошибка ИИ обработки: Telegram server says - Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 3074
 2025-06-20 06:17:51,558 - aiogram.event - INFO - Update id=422669482 is handled. Duration 3922 ms by bot id=7913442149
+2025-06-20 06:32:04,654 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 06:32:04,654 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 06:32:04,655 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 06:32:04,658 - root - INFO - База данных инициализирована
+2025-06-20 06:32:04,659 - root - INFO - Таблица users: 2 записей
+2025-06-20 06:32:04,660 - root - INFO - Таблица services: 15 записей
+2025-06-20 06:32:04,660 - root - INFO - Таблица masters: 5 записей
+2025-06-20 06:32:04,660 - root - INFO - Таблица orders: 7 записей
+2025-06-20 06:32:04,661 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 06:32:04,661 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 06:32:04,661 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 06:32:04,668 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 06:32:04,668 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 06:32:04,979 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 06:32:04,979 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 06:32:04,979 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 06:32:04,979 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 06:32:05,054 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 06:32:05,408 - aiogram.event - INFO - Update id=422669483 is handled. Duration 266 ms by bot id=7913442149
+2025-06-20 06:32:27,776 - root - INFO - ИИ рекомендовал услуги: [1, 2, 3, 1, 2]
+2025-06-20 06:32:27,935 - root - ERROR - Ошибка ИИ обработки: Telegram server says - Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 3014
+2025-06-20 06:32:28,101 - aiogram.event - INFO - Update id=422669484 is handled. Duration 3719 ms by bot id=7913442149
+2025-06-20 06:32:43,212 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 06:32:43,463 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 06:32:43,480 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 06:32:43,480 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 06:32:43,480 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 06:35:30,742 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 06:35:30,743 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 06:35:30,743 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 06:35:30,745 - root - INFO - База данных инициализирована
+2025-06-20 06:35:30,747 - root - INFO - Таблица users: 2 записей
+2025-06-20 06:35:30,747 - root - INFO - Таблица services: 15 записей
+2025-06-20 06:35:30,747 - root - INFO - Таблица masters: 5 записей
+2025-06-20 06:35:30,748 - root - INFO - Таблица orders: 7 записей
+2025-06-20 06:35:30,748 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 06:35:30,748 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 06:35:30,749 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 06:35:30,757 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 06:35:30,757 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 06:35:30,993 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 06:35:30,993 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 06:35:30,993 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 06:35:30,993 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 06:35:31,065 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 06:35:34,982 - aiogram.event - INFO - Update id=422669485 is handled. Duration 266 ms by bot id=7913442149
+2025-06-20 06:35:56,850 - root - INFO - ИИ рекомендовал услуги: [1, 2, 3, 9, 1]
+2025-06-20 06:35:57,050 - aiogram.event - INFO - Update id=422669486 is handled. Duration 4452 ms by bot id=7913442149
+2025-06-20 06:36:12,995 - root - INFO - === ОТЛАДКА add_ai_services ===
+2025-06-20 06:36:12,995 - root - INFO - Все данные state: {'current_message_id': 376, 'recommended_services': [1, 2, 3, 9, 1]}
+2025-06-20 06:36:12,995 - root - INFO - recommended_services из state: [1, 2, 3, 9, 1]
+2025-06-20 06:36:12,995 - root - INFO - Тип recommended_services: <class 'list'>
+2025-06-20 06:36:13,249 - root - INFO - ✅ Успешно добавлены услуги ИИ в заказ: [1, 2, 3, 9, 1]
+2025-06-20 06:36:13,331 - aiogram.event - INFO - Update id=422669487 is handled. Duration 343 ms by bot id=7913442149
+2025-06-20 06:36:17,164 - aiogram.event - INFO - Update id=422669488 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:36:18,146 - aiogram.event - INFO - Update id=422669489 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:36:19,487 - aiogram.event - INFO - Update id=422669490 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:36:20,841 - root - INFO - Создан заказ 8 для пользователя 716639474
+2025-06-20 06:36:20,931 - root - INFO - Создан заказ 8 для пользователя 716639474
+2025-06-20 06:36:21,011 - aiogram.event - INFO - Update id=422669491 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 06:38:55,483 - aiogram.event - INFO - Update id=422669492 is handled. Duration 391 ms by bot id=7913442149
+2025-06-20 06:38:59,381 - aiogram.event - INFO - Update id=422669493 is handled. Duration 358 ms by bot id=7913442149
+2025-06-20 06:39:03,894 - aiogram.event - INFO - Update id=422669494 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 06:39:05,053 - aiogram.event - INFO - Update id=422669495 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 06:39:12,084 - aiogram.event - INFO - Update id=422669496 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 06:39:13,785 - aiogram.event - INFO - Update id=422669497 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:39:14,812 - aiogram.event - INFO - Update id=422669498 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:15,827 - aiogram.event - INFO - Update id=422669499 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:17,086 - root - INFO - Статус заказа 8 изменен на cancelled
+2025-06-20 06:39:17,190 - root - INFO - Пользователь 716639474 отменил заказ 8
+2025-06-20 06:39:17,266 - aiogram.event - INFO - Update id=422669500 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 06:39:21,271 - aiogram.event - INFO - Update id=422669501 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 06:39:29,720 - aiogram.event - INFO - Update id=422669502 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:37,078 - aiogram.event - INFO - Update id=422669503 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 06:39:42,686 - aiogram.event - INFO - Update id=422669504 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:43,651 - aiogram.event - INFO - Update id=422669505 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:39:44,343 - aiogram.event - INFO - Update id=422669506 is handled. Duration 187 ms by bot id=7913442149
+2025-06-20 06:39:45,551 - aiogram.event - INFO - Update id=422669507 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:49,328 - aiogram.event - INFO - Update id=422669508 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:50,140 - aiogram.event - INFO - Update id=422669509 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:39:50,478 - aiogram.event - INFO - Update id=422669510 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:51,948 - aiogram.event - INFO - Update id=422669511 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:39:53,710 - aiogram.event - INFO - Update id=422669512 is handled. Duration 204 ms by bot id=7913442149
+2025-06-20 06:39:55,002 - aiogram.event - INFO - Update id=422669513 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 06:39:56,559 - aiogram.event - INFO - Update id=422669514 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 06:40:02,839 - root - INFO - Создан заказ 9 для пользователя 716639474
+2025-06-20 06:40:02,966 - root - INFO - Создан заказ 9 для пользователя 716639474
+2025-06-20 06:40:03,042 - aiogram.event - INFO - Update id=422669515 is handled. Duration 217 ms by bot id=7913442149
+2025-06-20 06:40:14,404 - aiogram.event - INFO - Update id=422669516 is handled. Duration 407 ms by bot id=7913442149
+2025-06-20 06:40:17,552 - aiogram.event - INFO - Update id=422669517 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 06:40:19,550 - aiogram.event - INFO - Update id=422669518 is handled. Duration 92 ms by bot id=7913442149
+2025-06-20 06:40:21,043 - aiogram.event - INFO - Update id=422669519 is handled. Duration 281 ms by bot id=7913442149
+2025-06-20 06:40:21,729 - aiogram.event - INFO - Update id=422669520 is handled. Duration 94 ms by bot id=7913442149
+2025-06-20 06:40:30,128 - aiogram.event - INFO - Update id=422669521 is handled. Duration 170 ms by bot id=7913442149
+2025-06-20 06:40:35,782 - aiogram.event - INFO - Update id=422669522 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 06:40:38,368 - aiogram.event - INFO - Update id=422669523 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 06:40:39,709 - root - INFO - Статус заказа 9 изменен на cancelled
+2025-06-20 06:40:39,802 - root - INFO - Пользователь 716639474 отменил заказ 9
+2025-06-20 06:40:39,879 - aiogram.event - INFO - Update id=422669524 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 06:41:24,157 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 06:41:24,417 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 06:41:24,433 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 06:41:24,433 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 06:41:24,434 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:36:01,984 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 12:36:01,985 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 12:36:01,985 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 12:36:01,988 - root - INFO - База данных инициализирована
+2025-06-20 12:36:01,990 - root - INFO - Таблица users: 2 записей
+2025-06-20 12:36:01,990 - root - INFO - Таблица services: 15 записей
+2025-06-20 12:36:01,991 - root - INFO - Таблица masters: 5 записей
+2025-06-20 12:36:01,991 - root - INFO - Таблица orders: 9 записей
+2025-06-20 12:36:01,991 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 12:36:01,991 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 12:36:01,991 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 12:36:02,021 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 12:36:02,022 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 12:36:02,315 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 12:36:02,316 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 12:36:02,316 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 12:36:02,317 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 12:36:02,385 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:36:38,409 - aiogram.event - INFO - Update id=422669525 is handled. Duration 327 ms by bot id=7913442149
+2025-06-20 12:36:47,911 - aiogram.event - INFO - Update id=422669526 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:36:53,066 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:36:53,157 - aiogram.event - INFO - Update id=422669527 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 12:36:57,908 - root - INFO - ИИ рекомендовал услуги: [1, 1, 2, 2, 3]
+2025-06-20 12:36:58,072 - root - ERROR - Ошибка ИИ обработки: Telegram server says - Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 3090
+2025-06-20 12:36:58,244 - aiogram.event - INFO - Update id=422669528 is handled. Duration 3655 ms by bot id=7913442149
+2025-06-20 12:38:08,038 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 12:38:08,290 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 12:38:08,301 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 12:38:08,301 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 12:38:08,302 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:38:38,125 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 12:38:38,125 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 12:38:38,125 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 12:38:38,128 - root - INFO - База данных инициализирована
+2025-06-20 12:38:38,130 - root - INFO - Таблица users: 2 записей
+2025-06-20 12:38:38,130 - root - INFO - Таблица services: 15 записей
+2025-06-20 12:38:38,131 - root - INFO - Таблица masters: 5 записей
+2025-06-20 12:38:38,131 - root - INFO - Таблица orders: 9 записей
+2025-06-20 12:38:38,132 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 12:38:38,132 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 12:38:38,132 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 12:38:38,141 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 12:38:38,142 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 12:38:38,329 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 12:38:38,329 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 12:38:38,330 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 12:38:38,330 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 12:38:38,404 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:41:58,942 - repair_bot - WARNING - Неизвестное сообщение от 1003589165: Кирилл
+2025-06-20 12:41:59,145 - aiogram.event - INFO - Update id=422669529 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 12:42:03,947 - aiogram.event - INFO - Update id=422669530 is handled. Duration 79 ms by bot id=7913442149
+2025-06-20 12:42:04,063 - repair_bot - WARNING - Неизвестное сообщение от 1003589165: Kirill
+2025-06-20 12:42:04,189 - aiogram.event - INFO - Update id=422669531 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:42:05,373 - aiogram.event - INFO - Update id=422669532 is handled. Duration 155 ms by bot id=7913442149
+2025-06-20 12:42:07,078 - aiogram.event - INFO - Update id=422669533 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:42:11,326 - aiogram.event - INFO - Update id=422669534 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:42:13,001 - root - INFO - Обновлено поле name для пользователя 6048727648
+2025-06-20 12:42:13,167 - root - INFO - Пользователь 6048727648 обновил имя на 'Евлампий'
+2025-06-20 12:42:13,168 - aiogram.event - INFO - Update id=422669535 is handled. Duration 390 ms by bot id=7913442149
+2025-06-20 12:42:14,793 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:42:14,903 - aiogram.event - INFO - Update id=422669536 is handled. Duration 109 ms by bot id=7913442149
+2025-06-20 12:42:18,320 - aiogram.event - INFO - Update id=422669537 is handled. Duration 63 ms by bot id=7913442149
+2025-06-20 12:42:18,442 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:42:18,555 - aiogram.event - INFO - Update id=422669538 is handled. Duration 108 ms by bot id=7913442149
+2025-06-20 12:42:21,266 - aiogram.event - INFO - Update id=422669539 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:45:18,813 - aiogram.event - INFO - Update id=422669540 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 12:45:21,293 - aiogram.event - INFO - Update id=422669541 is handled. Duration 77 ms by bot id=7913442149
+2025-06-20 12:45:38,971 - aiogram.event - INFO - Update id=422669542 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 12:45:42,947 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:45:43,015 - aiogram.event - INFO - Update id=422669543 is handled. Duration 77 ms by bot id=7913442149
+2025-06-20 12:46:41,382 - aiogram.event - INFO - Update id=422669544 is handled. Duration 280 ms by bot id=7913442149
+2025-06-20 12:46:42,833 - aiogram.event - INFO - Update id=422669545 is handled. Duration 157 ms by bot id=7913442149
+2025-06-20 12:46:45,817 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:46:45,901 - aiogram.event - INFO - Update id=422669546 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 12:46:49,073 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:46:49,175 - aiogram.event - INFO - Update id=422669547 is handled. Duration 108 ms by bot id=7913442149
+2025-06-20 12:46:51,578 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:46:51,707 - aiogram.event - INFO - Update id=422669548 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 12:48:16,912 - aiogram.event - INFO - Update id=422669549 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 12:48:23,080 - root - ERROR - Ошибка в process_name: 'name'
+2025-06-20 12:48:23,165 - aiogram.event - INFO - Update id=422669550 is handled. Duration 92 ms by bot id=7913442149
+2025-06-20 12:48:26,898 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 12:48:27,147 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 12:48:27,165 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 12:48:27,166 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 12:48:27,167 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:54:04,145 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 12:54:04,145 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 12:54:04,145 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 12:54:04,148 - root - INFO - База данных инициализирована
+2025-06-20 12:54:04,150 - root - INFO - Таблица users: 2 записей
+2025-06-20 12:54:04,150 - root - INFO - Таблица services: 15 записей
+2025-06-20 12:54:04,150 - root - INFO - Таблица masters: 5 записей
+2025-06-20 12:54:04,151 - root - INFO - Таблица orders: 9 записей
+2025-06-20 12:54:04,152 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 12:54:04,152 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 12:54:04,153 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 12:54:04,170 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 12:54:04,170 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 12:54:04,468 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 12:54:04,469 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 12:54:04,470 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 12:54:04,470 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 12:54:04,548 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 12:59:26,430 - aiogram.event - INFO - Update id=422669551 is handled. Duration 358 ms by bot id=7913442149
+2025-06-20 12:59:28,074 - aiogram.event - INFO - Update id=422669552 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 12:59:33,909 - aiogram.event - INFO - Update id=422669553 is handled. Duration 327 ms by bot id=7913442149
+2025-06-20 12:59:45,645 - aiogram.event - INFO - Update id=422669554 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 13:00:15,686 - aiogram.event - INFO - Update id=422669555 is handled. Duration 297 ms by bot id=7913442149
+2025-06-20 13:00:38,895 - root - INFO - Создан новый пользователь 1003589165
+2025-06-20 13:00:39,137 - root - INFO - Новый пользователь зарегистрирован: ID=1003589165, name=Евпопий, username=beastzhivotnovich
+2025-06-20 13:00:39,138 - aiogram.event - INFO - Update id=422669556 is handled. Duration 266 ms by bot id=7913442149
+2025-06-20 13:00:42,784 - aiogram.event - INFO - Update id=422669557 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:00:46,857 - aiogram.event - INFO - Update id=422669558 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 13:00:48,147 - aiogram.event - INFO - Update id=422669559 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 13:00:48,520 - aiogram.event - INFO - Update id=422669560 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 13:00:49,251 - aiogram.event - INFO - Update id=422669561 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:00:50,125 - aiogram.event - INFO - Update id=422669562 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:00:53,069 - aiogram.event - INFO - Update id=422669563 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 13:00:54,529 - aiogram.event - INFO - Update id=422669564 is handled. Duration 327 ms by bot id=7913442149
+2025-06-20 13:00:55,589 - aiogram.event - INFO - Update id=422669565 is handled. Duration 437 ms by bot id=7913442149
+2025-06-20 13:00:55,964 - aiogram.event - INFO - Update id=422669566 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:00:57,335 - aiogram.event - INFO - Update id=422669567 is handled. Duration 204 ms by bot id=7913442149
+2025-06-20 13:00:58,222 - aiogram.event - INFO - Update id=422669568 is handled. Duration 187 ms by bot id=7913442149
+2025-06-20 13:01:00,831 - aiogram.event - INFO - Update id=422669569 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 13:01:01,385 - aiogram.event - INFO - Update id=422669570 is handled. Duration 155 ms by bot id=7913442149
+2025-06-20 13:01:01,989 - aiogram.event - INFO - Update id=422669571 is handled. Duration 203 ms by bot id=7913442149
+2025-06-20 13:01:02,862 - aiogram.event - INFO - Update id=422669572 is handled. Duration 94 ms by bot id=7913442149
+2025-06-20 13:01:44,603 - aiogram.event - INFO - Update id=422669573 is handled. Duration 375 ms by bot id=7913442149
+2025-06-20 13:01:46,484 - aiogram.event - INFO - Update id=422669574 is handled. Duration 219 ms by bot id=7913442149
+2025-06-20 13:01:47,813 - aiogram.event - INFO - Update id=422669575 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 13:01:50,766 - aiogram.event - INFO - Update id=422669576 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 13:01:52,536 - root - INFO - Создан заказ 10 для пользователя 1003589165
+2025-06-20 13:01:52,648 - root - INFO - Создан заказ 10 для пользователя 1003589165
+2025-06-20 13:01:52,736 - aiogram.event - INFO - Update id=422669577 is handled. Duration 235 ms by bot id=7913442149
+2025-06-20 13:01:59,734 - aiogram.event - INFO - Update id=422669578 is handled. Duration 203 ms by bot id=7913442149
+2025-06-20 13:02:34,482 - aiogram.event - INFO - Update id=422669579 is handled. Duration 453 ms by bot id=7913442149
+2025-06-20 13:02:43,182 - root - ERROR - Ошибка в start_create_review: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-06-20 13:02:43,268 - aiogram.event - INFO - Update id=422669580 is handled. Duration 171 ms by bot id=7913442149
+2025-06-20 13:02:44,344 - root - ERROR - Ошибка в start_create_review: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-06-20 13:02:44,431 - aiogram.event - INFO - Update id=422669581 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:03:35,472 - aiogram.event - INFO - Update id=422669582 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:03:36,915 - aiogram.event - INFO - Update id=422669583 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 13:03:39,287 - root - ERROR - Ошибка в start_create_review: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-06-20 13:03:39,370 - aiogram.event - INFO - Update id=422669584 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 13:03:42,732 - aiogram.event - INFO - Update id=422669585 is handled. Duration 156 ms by bot id=7913442149
+2025-06-20 13:03:48,953 - aiogram.event - INFO - Update id=422669586 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 13:03:51,348 - aiogram.event - INFO - Update id=422669587 is handled. Duration 328 ms by bot id=7913442149
+2025-06-20 13:03:52,259 - aiogram.event - INFO - Update id=422669588 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 13:03:59,889 - aiogram.event - INFO - Update id=422669589 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:04:01,804 - aiogram.event - INFO - Update id=422669590 is handled. Duration 265 ms by bot id=7913442149
+2025-06-20 13:04:03,503 - aiogram.event - INFO - Update id=422669591 is handled. Duration 295 ms by bot id=7913442149
+2025-06-20 13:04:08,077 - aiogram.event - INFO - Update id=422669592 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 13:04:10,738 - aiogram.event - INFO - Update id=422669593 is handled. Duration 172 ms by bot id=7913442149
+2025-06-20 13:04:18,044 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 13:04:18,302 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 13:04:18,319 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 13:04:18,319 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 13:04:18,320 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 13:10:31,476 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 13:10:31,476 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 13:10:31,476 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 13:10:31,479 - root - INFO - База данных инициализирована
+2025-06-20 13:10:31,480 - root - INFO - Таблица users: 3 записей
+2025-06-20 13:10:31,481 - root - INFO - Таблица services: 15 записей
+2025-06-20 13:10:31,481 - root - INFO - Таблица masters: 5 записей
+2025-06-20 13:10:31,481 - root - INFO - Таблица orders: 10 записей
+2025-06-20 13:10:31,482 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 13:10:31,482 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 13:10:31,482 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 13:10:31,501 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 13:10:31,501 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 13:10:31,810 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 13:10:31,811 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 13:10:31,811 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 13:10:31,812 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 13:10:31,882 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 13:10:41,598 - aiogram.event - INFO - Update id=422669594 is handled. Duration 328 ms by bot id=7913442149
+2025-06-20 13:10:42,799 - root - INFO - Пользователь 6048727648: найдено 5 заказов
+2025-06-20 13:10:42,799 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 13:10:42,800 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 13:10:42,800 - root - INFO - Заказ 6: статус = pending
+2025-06-20 13:10:42,801 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 13:10:42,801 - root - INFO - Заказ 5: статус = pending
+2025-06-20 13:10:42,802 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 13:10:42,802 - root - INFO - Заказ 4: статус = pending
+2025-06-20 13:10:42,803 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 13:10:42,803 - root - INFO - Заказ 3: статус = pending
+2025-06-20 13:10:42,804 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 13:10:42,804 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 13:10:42,988 - aiogram.event - INFO - Update id=422669595 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 13:10:57,306 - root - INFO - Пользователь 6048727648: найдено 5 заказов
+2025-06-20 13:10:57,306 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 13:10:57,307 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 13:10:57,307 - root - INFO - Заказ 6: статус = pending
+2025-06-20 13:10:57,308 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 13:10:57,308 - root - INFO - Заказ 5: статус = pending
+2025-06-20 13:10:57,309 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 13:10:57,309 - root - INFO - Заказ 4: статус = pending
+2025-06-20 13:10:57,310 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 13:10:57,310 - root - INFO - Заказ 3: статус = pending
+2025-06-20 13:10:57,311 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 13:10:57,312 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 13:10:57,410 - root - ERROR - Ошибка в start_create_review: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-06-20 13:10:57,513 - aiogram.event - INFO - Update id=422669596 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 13:11:02,086 - aiogram.event - INFO - Update id=422669597 is handled. Duration 109 ms by bot id=7913442149
+2025-06-20 13:11:03,462 - aiogram.event - INFO - Update id=422669598 is handled. Duration 188 ms by bot id=7913442149
+2025-06-20 13:11:25,223 - aiogram.event - INFO - Update id=422669599 is handled. Duration 233 ms by bot id=7913442149
+2025-06-20 13:11:26,999 - aiogram.event - INFO - Update id=422669600 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:11:27,323 - aiogram.event - INFO - Update id=422669601 is handled. Duration 204 ms by bot id=7913442149
+2025-06-20 13:11:28,404 - aiogram.event - INFO - Update id=422669602 is handled. Duration 375 ms by bot id=7913442149
+2025-06-20 13:11:32,010 - aiogram.event - INFO - Update id=422669603 is handled. Duration 186 ms by bot id=7913442149
+2025-06-20 13:11:35,175 - aiogram.event - INFO - Update id=422669604 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:11:39,201 - aiogram.event - INFO - Update id=422669605 is handled. Duration 204 ms by bot id=7913442149
+2025-06-20 13:11:40,277 - root - INFO - Создан заказ 11 для пользователя 6048727648
+2025-06-20 13:11:40,376 - root - INFO - Создан заказ 11 для пользователя 6048727648
+2025-06-20 13:11:40,475 - aiogram.event - INFO - Update id=422669606 is handled. Duration 203 ms by bot id=7913442149
+2025-06-20 13:11:43,655 - aiogram.event - INFO - Update id=422669607 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 13:11:45,817 - root - INFO - Пользователь 6048727648: найдено 6 заказов
+2025-06-20 13:11:45,818 - root - INFO - Заказ 11: статус = pending
+2025-06-20 13:11:45,819 - root - INFO - Заказ 11: отзыв существует = False
+2025-06-20 13:11:45,820 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 13:11:45,821 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 13:11:45,821 - root - INFO - Заказ 6: статус = pending
+2025-06-20 13:11:45,822 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 13:11:45,822 - root - INFO - Заказ 5: статус = pending
+2025-06-20 13:11:45,823 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 13:11:45,823 - root - INFO - Заказ 4: статус = pending
+2025-06-20 13:11:45,824 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 13:11:45,824 - root - INFO - Заказ 3: статус = pending
+2025-06-20 13:11:45,825 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 13:11:45,825 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 13:11:46,204 - aiogram.event - INFO - Update id=422669608 is handled. Duration 391 ms by bot id=7913442149
+2025-06-20 13:11:46,775 - root - INFO - Пользователь 6048727648: найдено 6 заказов
+2025-06-20 13:11:46,775 - root - INFO - Заказ 11: статус = pending
+2025-06-20 13:11:46,776 - root - INFO - Заказ 11: отзыв существует = False
+2025-06-20 13:11:46,776 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 13:11:46,777 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 13:11:46,777 - root - INFO - Заказ 6: статус = pending
+2025-06-20 13:11:46,779 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 13:11:46,779 - root - INFO - Заказ 5: статус = pending
+2025-06-20 13:11:46,780 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 13:11:46,780 - root - INFO - Заказ 4: статус = pending
+2025-06-20 13:11:46,782 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 13:11:46,782 - root - INFO - Заказ 3: статус = pending
+2025-06-20 13:11:46,783 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 13:11:46,783 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 13:11:47,008 - root - ERROR - Ошибка в start_create_review: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-06-20 13:11:47,165 - aiogram.event - INFO - Update id=422669609 is handled. Duration 406 ms by bot id=7913442149
+2025-06-20 13:12:29,318 - aiogram.event - INFO - Update id=422669610 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:12:31,231 - aiogram.event - INFO - Update id=422669611 is handled. Duration 235 ms by bot id=7913442149
+2025-06-20 13:13:02,890 - repair_bot - WARNING - Неизвестный callback от 6048727648: show_all_orders
+2025-06-20 13:13:03,308 - aiogram.event - INFO - Update id=422669612 is handled. Duration 422 ms by bot id=7913442149
+2025-06-20 13:13:09,443 - aiogram.event - INFO - Update id=422669613 is handled. Duration 93 ms by bot id=7913442149
+2025-06-20 13:13:10,969 - root - INFO - Пользователь 6048727648: найдено 6 заказов
+2025-06-20 13:13:10,969 - root - INFO - Заказ 11: статус = pending
+2025-06-20 13:13:10,970 - root - INFO - Заказ 11: отзыв существует = False
+2025-06-20 13:13:10,970 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 13:13:10,971 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 13:13:10,971 - root - INFO - Заказ 6: статус = pending
+2025-06-20 13:13:10,972 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 13:13:10,972 - root - INFO - Заказ 5: статус = pending
+2025-06-20 13:13:10,974 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 13:13:10,974 - root - INFO - Заказ 4: статус = pending
+2025-06-20 13:13:10,975 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 13:13:10,975 - root - INFO - Заказ 3: статус = pending
+2025-06-20 13:13:10,976 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 13:13:10,976 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 13:13:11,151 - aiogram.event - INFO - Update id=422669614 is handled. Duration 187 ms by bot id=7913442149
+2025-06-20 13:13:14,630 - aiogram.event - INFO - Update id=422669615 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 13:13:16,265 - aiogram.event - INFO - Update id=422669616 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 13:17:30,475 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 13:17:30,740 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 13:17:30,746 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 13:17:30,747 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 13:17:30,747 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 13:53:59,659 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 13:53:59,659 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 13:53:59,660 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 13:53:59,662 - root - INFO - База данных инициализирована
+2025-06-20 13:53:59,663 - root - INFO - Таблица users: 3 записей
+2025-06-20 13:53:59,663 - root - INFO - Таблица services: 15 записей
+2025-06-20 13:53:59,665 - root - INFO - Таблица masters: 5 записей
+2025-06-20 13:53:59,665 - root - INFO - Таблица orders: 11 записей
+2025-06-20 13:53:59,665 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 13:53:59,665 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 13:53:59,665 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 13:53:59,677 - repair_bot - ERROR - ❌ Ошибка настройки роутеров: name 'InlineKeyboardMarkup' is not defined
+2025-06-20 13:53:59,677 - repair_bot - ERROR - ❌ Критическая ошибка при запуске: name 'InlineKeyboardMarkup' is not defined
+2025-06-20 13:53:59,677 - repair_bot - ERROR - ❌ Критическая ошибка работы: name 'InlineKeyboardMarkup' is not defined
+2025-06-20 13:53:59,677 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 13:53:59,693 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 13:53:59,693 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 13:53:59,693 - root - ERROR - ❌ Критическая ошибка приложения: name 'InlineKeyboardMarkup' is not defined
+2025-06-20 13:58:19,334 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 13:58:19,334 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 13:58:19,335 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 13:58:19,338 - root - INFO - База данных инициализирована
+2025-06-20 13:58:19,339 - root - INFO - Таблица users: 3 записей
+2025-06-20 13:58:19,339 - root - INFO - Таблица services: 15 записей
+2025-06-20 13:58:19,340 - root - INFO - Таблица masters: 5 записей
+2025-06-20 13:58:19,340 - root - INFO - Таблица orders: 11 записей
+2025-06-20 13:58:19,340 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 13:58:19,341 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 13:58:19,341 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 13:58:19,375 - repair_bot - ERROR - ❌ Ошибка настройки роутеров: unmatched ']' (reviews.py, line 459)
+2025-06-20 13:58:19,375 - repair_bot - ERROR - ❌ Критическая ошибка при запуске: unmatched ']' (reviews.py, line 459)
+2025-06-20 13:58:19,375 - repair_bot - ERROR - ❌ Критическая ошибка работы: unmatched ']' (reviews.py, line 459)
+2025-06-20 13:58:19,375 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 13:58:19,383 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 13:58:19,384 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 13:58:19,384 - root - ERROR - ❌ Критическая ошибка приложения: unmatched ']' (reviews.py, line 459)
+2025-06-20 14:00:41,817 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 14:00:41,818 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 14:00:41,818 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 14:00:41,820 - root - INFO - База данных инициализирована
+2025-06-20 14:00:41,822 - root - INFO - Таблица users: 3 записей
+2025-06-20 14:00:41,823 - root - INFO - Таблица services: 15 записей
+2025-06-20 14:00:41,823 - root - INFO - Таблица masters: 5 записей
+2025-06-20 14:00:41,823 - root - INFO - Таблица orders: 11 записей
+2025-06-20 14:00:41,824 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 14:00:41,824 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 14:00:41,824 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 14:00:41,845 - repair_bot - ERROR - ❌ Ошибка настройки роутеров: invalid syntax (ai_consultation.py, line 283)
+2025-06-20 14:00:41,845 - repair_bot - ERROR - ❌ Критическая ошибка при запуске: invalid syntax (ai_consultation.py, line 283)
+2025-06-20 14:00:41,845 - repair_bot - ERROR - ❌ Критическая ошибка работы: invalid syntax (ai_consultation.py, line 283)
+2025-06-20 14:00:41,845 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 14:00:41,853 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 14:00:41,854 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 14:00:41,854 - root - ERROR - ❌ Критическая ошибка приложения: invalid syntax (ai_consultation.py, line 283)
+2025-06-20 14:03:20,155 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 14:03:20,155 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 14:03:20,155 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 14:03:20,157 - root - INFO - База данных инициализирована
+2025-06-20 14:03:20,159 - root - INFO - Таблица users: 3 записей
+2025-06-20 14:03:20,159 - root - INFO - Таблица services: 15 записей
+2025-06-20 14:03:20,160 - root - INFO - Таблица masters: 5 записей
+2025-06-20 14:03:20,160 - root - INFO - Таблица orders: 11 записей
+2025-06-20 14:03:20,160 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 14:03:20,161 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 14:03:20,161 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 14:03:20,180 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 14:03:20,181 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 14:03:20,530 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 14:03:20,531 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 14:03:20,531 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 14:03:20,531 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 14:03:20,611 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 14:03:21,117 - aiogram.event - INFO - Update id=422669617 is handled. Duration 406 ms by bot id=7913442149
+2025-06-20 14:03:31,339 - aiogram.event - INFO - Update id=422669618 is handled. Duration 203 ms by bot id=7913442149
+2025-06-20 14:03:33,683 - root - ERROR - Неожиданная ошибка в get_user_orders: DatabaseQueries.get_user_orders() takes from 2 to 3 positional arguments but 4 were given
+2025-06-20 14:03:33,873 - aiogram.event - INFO - Update id=422669619 is handled. Duration 202 ms by bot id=7913442149
+2025-06-20 14:03:34,719 - aiogram.event - INFO - Update id=422669620 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 14:03:40,156 - aiogram.event - INFO - Update id=422669621 is handled. Duration 109 ms by bot id=7913442149
+2025-06-20 14:03:41,081 - repair_bot - WARNING - Неизвестный callback от 6048727648: make_order
+2025-06-20 14:03:41,365 - aiogram.event - INFO - Update id=422669622 is handled. Duration 281 ms by bot id=7913442149
+2025-06-20 14:03:46,145 - aiogram.event - INFO - Update id=422669623 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 14:03:50,909 - aiogram.event - INFO - Update id=422669624 is handled. Duration 312 ms by bot id=7913442149
+2025-06-20 14:03:51,822 - aiogram.event - INFO - Update id=422669625 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 14:03:52,156 - aiogram.event - INFO - Update id=422669626 is handled. Duration 109 ms by bot id=7913442149
+2025-06-20 14:03:52,552 - aiogram.event - INFO - Update id=422669627 is handled. Duration 422 ms by bot id=7913442149
+2025-06-20 14:03:53,928 - aiogram.event - INFO - Update id=422669628 is handled. Duration 342 ms by bot id=7913442149
+2025-06-20 14:03:54,830 - aiogram.event - INFO - Update id=422669629 is handled. Duration 313 ms by bot id=7913442149
+2025-06-20 14:03:55,955 - aiogram.event - INFO - Update id=422669630 is handled. Duration 204 ms by bot id=7913442149
+2025-06-20 14:03:57,030 - aiogram.event - INFO - Update id=422669631 is handled. Duration 187 ms by bot id=7913442149
+2025-06-20 14:03:57,920 - root - INFO - Создан заказ 12 для пользователя 6048727648
+2025-06-20 14:03:58,024 - root - INFO - Создан заказ 12 для пользователя 6048727648
+2025-06-20 14:03:58,132 - aiogram.event - INFO - Update id=422669632 is handled. Duration 233 ms by bot id=7913442149
+2025-06-20 14:04:01,401 - aiogram.event - INFO - Update id=422669633 is handled. Duration 109 ms by bot id=7913442149
+2025-06-20 14:04:02,467 - root - ERROR - Неожиданная ошибка в get_user_orders: DatabaseQueries.get_user_orders() takes from 2 to 3 positional arguments but 4 were given
+2025-06-20 14:04:02,901 - aiogram.event - INFO - Update id=422669634 is handled. Duration 437 ms by bot id=7913442149
+2025-06-20 14:04:12,010 - aiogram.event - INFO - Update id=422669635 is handled. Duration 141 ms by bot id=7913442149
+2025-06-20 14:04:13,097 - root - INFO - Пользователь 6048727648: найдено 7 заказов
+2025-06-20 14:04:13,097 - root - INFO - Заказ 12: статус = pending
+2025-06-20 14:04:13,098 - root - INFO - Заказ 12: отзыв существует = False
+2025-06-20 14:04:13,099 - root - INFO - Заказ 11: статус = pending
+2025-06-20 14:04:13,100 - root - INFO - Заказ 11: отзыв существует = False
+2025-06-20 14:04:13,100 - root - INFO - Заказ 7: статус = cancelled
+2025-06-20 14:04:13,101 - root - INFO - Заказ 7: отзыв существует = False
+2025-06-20 14:04:13,101 - root - INFO - Заказ 6: статус = pending
+2025-06-20 14:04:13,102 - root - INFO - Заказ 6: отзыв существует = False
+2025-06-20 14:04:13,102 - root - INFO - Заказ 5: статус = pending
+2025-06-20 14:04:13,103 - root - INFO - Заказ 5: отзыв существует = False
+2025-06-20 14:04:13,103 - root - INFO - Заказ 4: статус = pending
+2025-06-20 14:04:13,104 - root - INFO - Заказ 4: отзыв существует = False
+2025-06-20 14:04:13,105 - root - INFO - Заказ 3: статус = pending
+2025-06-20 14:04:13,106 - root - INFO - Заказ 3: отзыв существует = True
+2025-06-20 14:04:13,106 - root - INFO - Доступно для отзыва: 0 заказов
+2025-06-20 14:04:13,476 - aiogram.event - INFO - Update id=422669636 is handled. Duration 375 ms by bot id=7913442149
+2025-06-20 14:04:19,250 - root - INFO - Создан новый пользователь 655907935
+2025-06-20 14:04:19,375 - root - INFO - Новый пользователь зарегистрирован: ID=655907935, name=сосал, username=saxonhell
+2025-06-20 14:04:19,375 - aiogram.event - INFO - Update id=422669637 is handled. Duration 139 ms by bot id=7913442149
+2025-06-20 14:04:30,702 - aiogram.event - INFO - Update id=422669638 is handled. Duration 125 ms by bot id=7913442149
+2025-06-20 14:04:49,014 - aiogram.event - INFO - Update id=422669639 is handled. Duration 421 ms by bot id=7913442149
+2025-06-20 14:04:59,723 - aiogram.event - INFO - Update id=422669640 is handled. Duration 312 ms by bot id=7913442149
+2025-06-20 14:05:04,804 - aiogram.event - INFO - Update id=422669641 is handled. Duration 108 ms by bot id=7913442149
+2025-06-20 14:05:06,283 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 14:05:06,543 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 14:05:06,559 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 14:05:06,559 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 14:05:06,559 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 14:11:49,066 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 14:11:49,066 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 14:11:49,066 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 14:11:49,068 - root - INFO - База данных инициализирована
+2025-06-20 14:11:49,070 - root - INFO - Таблица users: 4 записей
+2025-06-20 14:11:49,070 - root - INFO - Таблица services: 15 записей
+2025-06-20 14:11:49,071 - root - INFO - Таблица masters: 5 записей
+2025-06-20 14:11:49,071 - root - INFO - Таблица orders: 12 записей
+2025-06-20 14:11:49,071 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 14:11:49,072 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 14:11:49,072 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 14:11:49,081 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 14:11:49,081 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 14:11:49,416 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 14:11:49,417 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 14:11:49,417 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 14:11:49,417 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 14:11:49,501 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 14:11:59,410 - aiogram.event - INFO - Update id=422669642 is handled. Duration 296 ms by bot id=7913442149
+2025-06-20 14:12:00,257 - root - ERROR - Неожиданная ошибка в get_user_orders: DatabaseQueries.get_user_orders() takes from 2 to 3 positional arguments but 4 were given
+2025-06-20 14:12:00,515 - aiogram.event - INFO - Update id=422669643 is handled. Duration 266 ms by bot id=7913442149
+2025-06-20 14:12:02,710 - aiogram.event - INFO - Update id=422669644 is handled. Duration 218 ms by bot id=7913442149
+2025-06-20 14:14:06,628 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 14:14:06,890 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 14:14:06,897 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 14:14:06,897 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 14:14:06,897 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 14:14:10,465 - root - INFO - ИИ сервис инициализирован успешно
+2025-06-20 14:14:10,466 - repair_bot - INFO - ✅ Компоненты бота инициализированы
+2025-06-20 14:14:10,466 - repair_bot - INFO - 🚀 Запуск бота...
+2025-06-20 14:14:10,468 - root - INFO - База данных инициализирована
+2025-06-20 14:14:10,470 - root - INFO - Таблица users: 4 записей
+2025-06-20 14:14:10,470 - root - INFO - Таблица services: 15 записей
+2025-06-20 14:14:10,471 - root - INFO - Таблица masters: 5 записей
+2025-06-20 14:14:10,471 - root - INFO - Таблица orders: 12 записей
+2025-06-20 14:14:10,472 - root - INFO - Таблица reviews: 11 записей
+2025-06-20 14:14:10,472 - repair_bot - INFO - ✅ База данных готова к работе
+2025-06-20 14:14:10,472 - repair_bot - INFO - ✅ Middleware настроены
+2025-06-20 14:14:10,486 - repair_bot - INFO - ✅ Роутеры настроены
+2025-06-20 14:14:10,486 - repair_bot - INFO - ✅ ИИ сервис доступен
+2025-06-20 14:14:10,748 - repair_bot - INFO - ✅ Бот @alex_computer_repair_bot успешно запущен!
+2025-06-20 14:14:10,748 - repair_bot - INFO - 📊 Конфигурация: INFO уровень логирования
+2025-06-20 14:14:10,749 - repair_bot - INFO - 💾 База данных: repair_bot.db
+2025-06-20 14:14:10,749 - aiogram.dispatcher - INFO - Start polling
+2025-06-20 14:14:10,827 - aiogram.dispatcher - INFO - Run polling for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'
+2025-06-20 14:14:17,278 - root - ERROR - Ошибка в show_order_history_page: 'DatabaseQueries' object has no attribute 'get_user_orders'
+2025-06-20 14:14:17,540 - aiogram.event - INFO - Update id=422669645 is handled. Duration 250 ms by bot id=7913442149
+2025-06-20 14:16:40,096 - aiogram.dispatcher - INFO - Polling stopped
+2025-06-20 14:16:40,356 - repair_bot - INFO - 🛑 Остановка бота...
+2025-06-20 14:16:40,373 - root - INFO - Резервная копия создана: backup_repair_bot.db
+2025-06-20 14:16:40,374 - repair_bot - INFO - ✅ Бот успешно остановлен
+2025-06-20 14:16:40,375 - aiogram.dispatcher - INFO - Polling stopped for bot @alex_computer_repair_bot id=7913442149 - 'Computer Repair Bot'

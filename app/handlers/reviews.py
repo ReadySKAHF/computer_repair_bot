@@ -3,7 +3,7 @@
 """
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -370,7 +370,6 @@ async def show_reviews_statistics(callback: CallbackQuery, db_queries: DatabaseQ
             comment = review['comment'][:50] + "..." if len(review['comment']) > 50 else review['comment']
             text += f"{stars} {comment}\n"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🔙 К отзывам", callback_data="back_to_reviews")]
         ])
@@ -416,7 +415,6 @@ async def show_best_reviews(callback: CallbackQuery, db_queries: DatabaseQueries
         if len(best_reviews) > 5:
             text += f"... и еще {len(best_reviews) - 5} отличных отзывов!"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📊 Статистика", callback_data="reviews_stats")],
             [InlineKeyboardButton(text="🔙 К отзывам", callback_data="back_to_reviews")]
@@ -456,7 +454,6 @@ async def back_to_reviews(callback: CallbackQuery, db_queries: DatabaseQueries):
             text += "Пока нет отзывов. Станьте первым!"
         
         # Расширенная клавиатура с дополнительными опциями
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="✍️ Оставить отзыв", callback_data="create_review")],
             [
@@ -500,7 +497,6 @@ async def moderate_reviews(callback: CallbackQuery, db_queries: DatabaseQueries)
             text += f"{stars} **{user_name}**\n"
             text += f"{comment[:100]}{'...' if len(comment) > 100 else ''}\n\n"
         
-        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🔙 К отзывам", callback_data="back_to_reviews")]
         ])
