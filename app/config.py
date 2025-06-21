@@ -24,6 +24,10 @@ class BotConfig:
     def __post_init__(self):
         if self.admin_ids is None:
             self.admin_ids = []
+    
+    def is_admin(self, user_id: int) -> bool:
+        """Проверка, является ли пользователь админом"""
+        return user_id in self.admin_ids
 
 
 class ConfigLoader:
@@ -100,8 +104,8 @@ MAX_MESSAGE_LENGTH=1000
 RATE_LIMIT_MESSAGES=30
 RATE_LIMIT_WINDOW=60
 
-# ID администраторов (через запятую)
-ADMIN_IDS=123456789,987654321
+# ID администраторов (через запятую) - ваши Telegram ID
+ADMIN_IDS=716639474,1003589165
 """
         with open(config_path, 'w', encoding='utf-8') as f:
             f.write(example_config)

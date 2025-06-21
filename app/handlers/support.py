@@ -1,5 +1,5 @@
 """
-Обработчики службы поддержки
+Обработчики службы поддержки (обновленная версия)
 """
 import logging
 from aiogram import Router, F
@@ -10,7 +10,6 @@ from aiogram.fsm.state import State, StatesGroup
 from ..database.queries import DatabaseQueries
 from ..services.validation_service import ValidationService
 from ..keyboards.main_menu import get_main_menu_keyboard
-from ..keyboards.profile_keyboards import get_support_keyboard, get_faq_keyboard
 from ..utils.constants import SECTION_DESCRIPTIONS, SUCCESS_MESSAGES
 
 
@@ -29,6 +28,60 @@ async def delete_current_message(message):
         await message.delete()
     except Exception:
         pass
+
+
+def get_support_keyboard() -> InlineKeyboardMarkup:
+    """Клавиатура поддержки"""
+    keyboard = [
+        [InlineKeyboardButton(
+            text="📝 Написать в поддержку", 
+            callback_data="write_support"
+        )],
+        [InlineKeyboardButton(
+            text="📋 Мои обращения", 
+            callback_data="my_support_requests"
+        )],
+        [InlineKeyboardButton(
+            text="❓ Часто задаваемые вопросы", 
+            callback_data="faq"
+        )],
+        [InlineKeyboardButton(
+            text="🔙 Главное меню", 
+            callback_data="main_menu"
+        )]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def get_faq_keyboard() -> InlineKeyboardMarkup:
+    """Клавиатура FAQ"""
+    keyboard = [
+        [InlineKeyboardButton(
+            text="❓ Как сделать заказ?", 
+            callback_data="faq_order"
+        )],
+        [InlineKeyboardButton(
+            text="💰 Как происходит оплата?", 
+            callback_data="faq_payment"
+        )],
+        [InlineKeyboardButton(
+            text="⏰ Время выполнения работ?", 
+            callback_data="faq_timing"
+        )],
+        [InlineKeyboardButton(
+            text="🛡️ Есть ли гарантия?", 
+            callback_data="faq_warranty"
+        )],
+        [InlineKeyboardButton(
+            text="🤖 Как работает ИИ консультация?", 
+            callback_data="faq_ai"
+        )],
+        [InlineKeyboardButton(
+            text="🔙 Назад", 
+            callback_data="support"
+        )]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
 # === ГЛАВНОЕ МЕНЮ ПОДДЕРЖКИ ===
@@ -60,6 +113,24 @@ async def show_support_menu(message: Message, state: FSMContext, user):
             "Произошла ошибка при загрузке меню поддержки.\n"
             "Попробуйте еще раз."
         )
+
+
+@support_router.callback_query(F.data == "support")
+async def show_support_menu_callback(callback: CallbackQuery, user):
+    """Показ меню поддержки через callback"""
+    if not user:
+        await callback.answer("❌ Для обращения в поддержку необходимо зарегистрироваться!")
+        return
+    
+    try:
+        text = f"{SECTION_DESCRIPTIONS['SUPPORT_REQUEST']}"
+        keyboard = get_support_keyboard()
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в show_support_menu_callback: {e}")
+        await callback.answer("❌ Ошибка при загрузке меню поддержки")
 
 
 @support_router.callback_query(F.data == "write_support")
@@ -127,6 +198,47 @@ async def process_support_message(message: Message, state: FSMContext, db_querie
             reply_markup=get_main_menu_keyboard()
         )
         await state.clear()
+
+
+# === МОИ ОБРАЩЕНИЯ ===
+
+@support_router.callback_query(F.data == "my_support_requests")
+async def show_my_support_requests(callback: CallbackQuery, db_queries: DatabaseQueries):
+    """Показ обращений пользователя с ответами"""
+    try:
+        requests = await db_queries.get_user_support_requests_with_responses(callback.from_user.id)
+        
+        if not requests:
+            text = "📝 **Мои обращения**\n\nВы еще не обращались в поддержку."
+        else:
+            text = f"📝 **Мои обращения** ({len(requests)})\n\n"
+            
+            for req in requests:
+                status_emoji = {"new": "🟡", "read": "🔵", "answered": "✅"}.get(req['status'], "❓")
+                
+                text += f"{status_emoji} **Обращение #{req['id']}**\n"
+                text += f"📅 {req['created_at']}\n"
+                text += f"💬 Ваш вопрос: {req['message'][:100]}{'...' if len(req['message']) > 100 else ''}\n"
+                
+                if req['admin_response']:
+                    text += f"💭 **Ответ:** {req['admin_response']}\n"
+                    text += f"🕐 Отвечено: {req['answered_at']}\n"
+                else:
+                    text += f"⏳ Ожидает ответа\n"
+                
+                text += "\n"
+        
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="📝 Новое обращение", callback_data="write_support")],
+            [InlineKeyboardButton(text="🔙 Поддержка", callback_data="support")]
+        ])
+        
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в show_my_support_requests: {e}")
+        await callback.answer("❌ Ошибка при загрузке обращений")
 
 
 # === FAQ ===

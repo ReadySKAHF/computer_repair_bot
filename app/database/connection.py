@@ -1,5 +1,5 @@
 """
-Модуль для работы с базой данных
+Обновленный модуль для работы с базой данных (исправлена миграция)
 """
 import aiosqlite
 import logging
@@ -48,13 +48,20 @@ class DatabaseManager:
     async def init_database(self):
         """Инициализация базы данных"""
         async with get_db_connection(self.db_path) as db:
-            await self._create_tables(db)
+            # Сначала создаем таблицы с базовой структурой
+            await self._create_base_tables(db)
+            
+            # Затем выполняем миграции для добавления новых полей
+            await self._migrate_support_table(db)
+            
+            # Создаем индексы
             await self._create_indexes(db)
+            
             await db.commit()
             logging.info("База данных инициализирована")
     
-    async def _create_tables(self, db: aiosqlite.Connection):
-        """Создание таблиц"""
+    async def _create_base_tables(self, db: aiosqlite.Connection):
+        """Создание базовых таблиц"""
         # Таблица пользователей
         await db.execute('''
             CREATE TABLE IF NOT EXISTS users (
@@ -130,7 +137,7 @@ class DatabaseManager:
             )
         ''')
         
-        # Таблица обращений в поддержку
+        # Базовая таблица обращений в поддержку (старая версия)
         await db.execute('''
             CREATE TABLE IF NOT EXISTS support_requests (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,20 +148,62 @@ class DatabaseManager:
             )
         ''')
     
+    async def _migrate_support_table(self, db: aiosqlite.Connection):
+        """Миграция таблицы поддержки для добавления ответов"""
+        try:
+            # Получаем информацию о структуре таблицы
+            cursor = await db.execute("PRAGMA table_info(support_requests)")
+            columns = await cursor.fetchall()
+            column_names = [col[1] for col in columns]
+            
+            logging.info(f"Существующие колонки в support_requests: {column_names}")
+            
+            # Добавляем новые поля если их нет
+            if 'admin_response' not in column_names:
+                await db.execute('ALTER TABLE support_requests ADD COLUMN admin_response TEXT')
+                logging.info("✅ Добавлено поле admin_response")
+            
+            if 'status' not in column_names:
+                await db.execute('ALTER TABLE support_requests ADD COLUMN status TEXT DEFAULT "new"')
+                logging.info("✅ Добавлено поле status")
+            
+            if 'admin_id' not in column_names:
+                await db.execute('ALTER TABLE support_requests ADD COLUMN admin_id INTEGER')
+                logging.info("✅ Добавлено поле admin_id")
+                
+            if 'answered_at' not in column_names:
+                await db.execute('ALTER TABLE support_requests ADD COLUMN answered_at TIMESTAMP')
+                logging.info("✅ Добавлено поле answered_at")
+            
+            # Устанавливаем статус 'new' для записей, у которых он NULL
+            await db.execute("UPDATE support_requests SET status = 'new' WHERE status IS NULL")
+            
+            logging.info("✅ Миграция таблицы support_requests завершена")
+                
+        except Exception as e:
+            logging.error(f"❌ Ошибка миграции таблицы support_requests: {e}")
+            raise
+    
     async def _create_indexes(self, db: aiosqlite.Connection):
         """Создание индексов для производительности"""
         indexes = [
             "CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)",
             "CREATE INDEX IF NOT EXISTS idx_orders_date ON orders(order_date)",
+            "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)",
             "CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews(user_id)",
             "CREATE INDEX IF NOT EXISTS idx_reviews_order_id ON reviews(order_id)",
             "CREATE INDEX IF NOT EXISTS idx_order_services_order_id ON order_services(order_id)",
             "CREATE INDEX IF NOT EXISTS idx_order_services_service_id ON order_services(service_id)",
-            "CREATE INDEX IF NOT EXISTS idx_support_user_id ON support_requests(user_id)"
+            "CREATE INDEX IF NOT EXISTS idx_support_user_id ON support_requests(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_support_status ON support_requests(status)",
+            "CREATE INDEX IF NOT EXISTS idx_support_admin_id ON support_requests(admin_id)"
         ]
         
         for index_sql in indexes:
-            await db.execute(index_sql)
+            try:
+                await db.execute(index_sql)
+            except Exception as e:
+                logging.warning(f"Не удалось создать индекс: {index_sql}, ошибка: {e}")
     
     async def populate_test_data(self):
         """Заполнение базы данных тестовыми данными"""
@@ -168,7 +217,7 @@ class DatabaseManager:
                 await self._populate_masters(db)
                 await self._populate_test_reviews(db)
                 await db.commit()
-                logging.info("Тестовые данные добавлены")
+                logging.info("✅ Тестовые данные добавлены")
     
     async def _populate_services(self, db: aiosqlite.Connection):
         """Добавление услуг"""
@@ -264,11 +313,18 @@ class DatabaseManager:
     async def check_db_health(self) -> bool:
         """Проверка состояния базы данных"""
         async with get_db_connection(self.db_path) as db:
-            tables = ['users', 'services', 'masters', 'orders', 'reviews']
+            tables = ['users', 'services', 'masters', 'orders', 'reviews', 'support_requests']
             for table in tables:
                 cursor = await db.execute(f"SELECT COUNT(*) FROM {table}")
                 count = await cursor.fetchone()
                 logging.info(f"Таблица {table}: {count[0] if count else 0} записей")
+            
+            # Проверяем структуру таблицы support_requests
+            cursor = await db.execute("PRAGMA table_info(support_requests)")
+            columns = await cursor.fetchall()
+            column_names = [col[1] for col in columns]
+            logging.info(f"Колонки в support_requests: {column_names}")
+            
             return True
     
     async def backup_database(self, backup_path: str):
@@ -281,4 +337,19 @@ class DatabaseManager:
             return True
         except Exception as e:
             logging.error(f"Ошибка создания резервной копии: {e}")
+            return False
+
+    async def reset_database(self):
+        """Сброс базы данных (для отладки)"""
+        try:
+            import os
+            if os.path.exists(self.db_path):
+                os.remove(self.db_path)
+                logging.info(f"База данных {self.db_path} удалена")
+            
+            await self.init_database()
+            logging.info("База данных пересоздана")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка сброса базы данных: {e}")
             return False

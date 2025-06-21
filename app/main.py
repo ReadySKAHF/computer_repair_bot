@@ -1,5 +1,5 @@
 """
-Основной файл запуска бота
+Основной файл запуска бота (обновленная версия)
 """
 import asyncio
 import logging
@@ -12,7 +12,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 
 # Импорты модулей приложения
-from .config import ConfigLoader, setup_logging, validate_config
+from .config import ConfigLoader, setup_logging, validate_config, BotConfig
 from .database.connection import DatabaseManager
 from .database.queries import DatabaseQueries
 from .services.ai_service import AIConsultationService
@@ -116,12 +116,9 @@ class RepairBot:
             
             # Админские команды для тестирования
             @self.dp.message(F.text.startswith("/admin"))
-            async def handle_admin_commands(message: Message, db_queries: DatabaseQueries):
+            async def handle_admin_commands(message: Message, db_queries: DatabaseQueries, config: BotConfig):
                 """Админские команды для тестирования"""
-                # Добавьте ваши Telegram ID здесь для безопасности
-                admin_ids = [716639474, 1003589165]  # ЗАМЕНИТЕ НА ВАШИ ID
-                
-                if message.from_user.id not in admin_ids:
+                if not config.is_admin(message.from_user.id):
                     await message.answer("❌ Доступ запрещен")
                     return
                 
@@ -208,12 +205,14 @@ class RepairBot:
                 data['db_queries'] = self.db_queries
                 data['ai_service'] = self.ai_service
                 data['order_service'] = self.order_service
+                data['config'] = self.config  # Добавляем конфиг
                 
                 # Добавляем информацию о пользователе для всех обработчиков
                 if hasattr(event, 'from_user') and event.from_user:
                     user = await self.db_queries.get_user(event.from_user.id)
                     data['user'] = user
                     data['is_registered'] = user is not None
+                    data['is_admin'] = self.config.is_admin(event.from_user.id)  # Добавляем проверку админа
                 
                 return await handler(event, data)
             
@@ -327,6 +326,7 @@ class RepairBot:
             self.logger.info(f"✅ Бот @{bot_info.username} успешно запущен!")
             self.logger.info(f"📊 Конфигурация: {self.config.log_level} уровень логирования")
             self.logger.info(f"💾 База данных: {self.config.db_path}")
+            self.logger.info(f"👤 Админы: {self.config.admin_ids}")
             
         except Exception as e:
             self.logger.error(f"❌ Критическая ошибка при запуске: {e}")
