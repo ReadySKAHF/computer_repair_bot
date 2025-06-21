@@ -66,7 +66,7 @@ async def start_ai_consultation(message: Message, state: FSMContext, user):
 
 @ai_router.message(AIConsultationStates.waiting_for_problem)
 async def process_ai_consultation(message: Message, state: FSMContext, 
-                                db_queries: DatabaseQueries, ai_service: AIConsultationService):
+                                db_queries: DatabaseQueries, ai_service: AIConsultationService, is_admin: bool = False):
     """Обработка описания проблемы пользователем"""
     try:
         # Удаляем сообщение пользователя
@@ -170,7 +170,7 @@ async def process_ai_consultation(message: Message, state: FSMContext,
                 "• Превышен лимит запросов\n"
                 "• Временная недоступность сервиса\n\n"
                 "Попробуйте еще раз или обратитесь в поддержку.",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             await state.clear()

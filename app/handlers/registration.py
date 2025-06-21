@@ -1,5 +1,5 @@
 """
-Обработчики регистрации пользователей
+Обработчики регистрации пользователей (исправленная версия)
 """
 import logging
 from aiogram import Router, F
@@ -25,17 +25,20 @@ class RegistrationStates(StatesGroup):
 
 
 @registration_router.message(Command("start"))
-async def cmd_start(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def cmd_start(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False, config=None):
     """Команда /start - приветствие и проверка регистрации"""
     try:
         user = await db_queries.get_user(message.from_user.id)
+        
+        # Определяем статус администратора
+        is_user_admin = is_admin if is_admin else (config and config.is_admin(message.from_user.id))
         
         if user:
             # Пользователь уже зарегистрирован
             await message.answer(
                 f"Добро пожаловать обратно, {user['name']}! 👋\n\n"
                 f"{SECTION_DESCRIPTIONS['MAIN_MENU']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_user_admin),
                 parse_mode='Markdown'
             )
             await state.clear()
@@ -132,7 +135,7 @@ async def process_phone(message: Message, state: FSMContext):
 
 
 @registration_router.message(StateFilter(RegistrationStates.waiting_for_address))
-async def process_address(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_address(message: Message, state: FSMContext, db_queries: DatabaseQueries, config=None):
     """Обработка ввода адреса и завершение регистрации"""
     try:
         # Валидация только адреса
@@ -185,6 +188,9 @@ async def process_address(message: Message, state: FSMContext, db_queries: Datab
             address=cleaned_data['address']
         )
         
+        # Определяем статус администратора
+        is_user_admin = config and config.is_admin(message.from_user.id)
+        
         if success:
             await message.answer(
                 f"{SUCCESS_MESSAGES['REGISTRATION_COMPLETE']}\n\n"
@@ -193,7 +199,7 @@ async def process_address(message: Message, state: FSMContext, db_queries: Datab
                 f"📞 Телефон: {cleaned_data['phone']}\n"
                 f"📍 Адрес: {cleaned_data['address']}\n\n"
                 f"{SECTION_DESCRIPTIONS['MAIN_MENU']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_user_admin),
                 parse_mode='Markdown'
             )
             await state.clear()
@@ -203,7 +209,8 @@ async def process_address(message: Message, state: FSMContext, db_queries: Datab
                 f"Новый пользователь зарегистрирован: "
                 f"ID={message.from_user.id}, "
                 f"name={cleaned_data['name']}, "
-                f"username={message.from_user.username}"
+                f"username={message.from_user.username}, "
+                f"is_admin={is_user_admin}"
             )
         else:
             await message.answer(
@@ -222,10 +229,11 @@ async def process_address(message: Message, state: FSMContext, db_queries: Datab
 
 
 @registration_router.message(Command("register"))
-async def cmd_register(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def cmd_register(message: Message, state: FSMContext, db_queries: DatabaseQueries, config=None):
     """Команда /register - принудительная перерегистрация"""
     try:
         user = await db_queries.get_user(message.from_user.id)
+        is_user_admin = config and config.is_admin(message.from_user.id)
         
         if user:
             await message.answer(
@@ -235,7 +243,7 @@ async def cmd_register(message: Message, state: FSMContext, db_queries: Database
                 f"Телефон: {user['phone']}\n"
                 f"Адрес: {user['address']}\n\n"
                 "Если хотите изменить данные, используйте раздел «Профиль».",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_user_admin),
                 parse_mode='Markdown'
             )
         else:
@@ -254,10 +262,11 @@ async def cmd_register(message: Message, state: FSMContext, db_queries: Database
 
 
 @registration_router.message(Command("profile"))
-async def cmd_profile_shortcut(message: Message, db_queries: DatabaseQueries):
+async def cmd_profile_shortcut(message: Message, db_queries: DatabaseQueries, config=None):
     """Команда /profile - быстрый доступ к профилю"""
     try:
         user = await db_queries.get_user(message.from_user.id)
+        is_user_admin = config and config.is_admin(message.from_user.id)
         
         if user:
             # Форматируем дату
@@ -270,7 +279,7 @@ async def cmd_profile_shortcut(message: Message, db_queries: DatabaseQueries):
                 f"**Адрес:** {user['address']}\n"
                 f"**Дата регистрации:** {date_str}\n\n"
                 "Для редактирования используйте кнопки ниже.",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_user_admin),
                 parse_mode='Markdown'
             )
         else:

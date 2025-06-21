@@ -1,5 +1,5 @@
 """
-Основной файл запуска бота (обновленная версия)
+Основной файл запуска бота (исправленная версия с админ панелью)
 """
 import asyncio
 import logging
@@ -91,9 +91,38 @@ class RepairBot:
             self.dp.include_router(ai_router)
             self.dp.include_router(support_router)
             
+            # Обработчик для кнопки "🔧 Админ панель"
+            @self.dp.message(F.text == "🔧 Админ панель")
+            async def handle_admin_panel_button(message: Message, state: FSMContext, db_queries: DatabaseQueries, config: BotConfig):
+                """Обработчик кнопки 'Админ панель'"""
+                if not config.is_admin(message.from_user.id):
+                    await message.answer("❌ Доступ запрещен")
+                    return
+                
+                try:
+                    # Получаем базовую статистику
+                    stats = await db_queries.get_statistics()
+                    
+                    text = "🔧 **Админ-панель**\n\n"
+                    text += f"**Краткая статистика:**\n"
+                    text += f"👥 Пользователей: {stats.get('total_users', 0)}\n"
+                    text += f"📋 Заказов: {stats.get('total_orders', 0)}\n"
+                    text += f"⭐ Средний рейтинг: {stats.get('average_rating', 0)}\n"
+                    text += f"💬 Обращений сегодня: {stats.get('support_requests_today', 0)}\n\n"
+                    text += "Выберите раздел для управления:"
+                    
+                    from .handlers.admin import get_admin_main_keyboard
+                    keyboard = get_admin_main_keyboard()
+                    await message.answer(text, reply_markup=keyboard, parse_mode='Markdown')
+                    await state.clear()
+                
+                except Exception as e:
+                    logging.error(f"Ошибка в handle_admin_panel_button: {e}")
+                    await message.answer("❌ Ошибка при загрузке админ-панели")
+            
             # Обработчик для make_order callback
             @self.dp.callback_query(F.data == "make_order")
-            async def handle_make_order_callback(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, user):
+            async def handle_make_order_callback(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, user, is_admin):
                 """Обработчик кнопки 'Сделать заказ' из inline клавиатур"""
                 if not user:
                     await callback.answer("❌ Для создания заказа необходимо зарегистрироваться!")
@@ -106,7 +135,7 @@ class RepairBot:
                     # Отправляем новое сообщение с ReplyKeyboardMarkup  
                     await callback.message.answer(
                         "🛠️ **Создание заказа**\n\nИспользуйте кнопку «🛠️ Сделать заказ» в главном меню для создания заказа.",
-                        reply_markup=get_main_menu_keyboard(),
+                        reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                         parse_mode='Markdown'
                     )
                     await callback.answer()
@@ -226,7 +255,7 @@ class RepairBot:
             self.logger.error(f"❌ Ошибка настройки middleware: {e}")
             raise
     
-    async def handle_main_menu_callback(self, callback: CallbackQuery, state, **kwargs):
+    async def handle_main_menu_callback(self, callback: CallbackQuery, state, is_admin=False, **kwargs):
         """Обработчик возврата в главное меню"""
         await state.clear()
         
@@ -239,22 +268,22 @@ class RepairBot:
         # Отправляем новое сообщение с ReplyKeyboardMarkup
         await callback.message.answer(
             "🏠 **Главное меню**\n\nВыберите нужную опцию:",
-            reply_markup=get_main_menu_keyboard(),
+            reply_markup=get_main_menu_keyboard(is_admin=is_admin),
             parse_mode='Markdown'
         )
         await callback.answer()
     
-    async def handle_unknown_message(self, message: Message):
+    async def handle_unknown_message(self, message: Message, is_admin=False):
         """Обработчик неизвестных сообщений"""
         self.logger.warning(f"Неизвестное сообщение от {message.from_user.id}: {message.text}")
         
         await message.answer(
             "🤔 Не понимаю, что вы имеете в виду.\n\n"
             "Используйте кнопки меню для навигации или команду /start для начала работы.",
-            reply_markup=get_main_menu_keyboard()
+            reply_markup=get_main_menu_keyboard(is_admin=is_admin)
         )
     
-    async def handle_unknown_callback(self, callback: CallbackQuery):
+    async def handle_unknown_callback(self, callback: CallbackQuery, is_admin=False):
         """Обработчик неизвестных callback'ов"""
         self.logger.warning(f"Неизвестный callback от {callback.from_user.id}: {callback.data}")
         
@@ -268,30 +297,41 @@ class RepairBot:
         
         await callback.message.answer(
             "🏠 **Главное меню**\n\nВыберите нужную опцию:",
-            reply_markup=get_main_menu_keyboard(),
+            reply_markup=get_main_menu_keyboard(is_admin=is_admin),
             parse_mode='Markdown'
         )
     
     async def setup_error_handlers(self):
         """Настройка обработчиков ошибок"""
+        
         @self.dp.error()
-        async def error_handler(event, exception):
+        async def error_handler(event, **kwargs):
             """Глобальный обработчик ошибок"""
+            # Получаем exception из kwargs, если есть
+            exception = kwargs.get('exception')
+            
             self.logger.error(f"Критическая ошибка: {exception}", exc_info=True)
             
             # Пытаемся уведомить пользователя
             try:
+                # Определяем статус админа
+                is_user_admin = False
+                if hasattr(event, 'message') and event.message and event.message.from_user:
+                    is_user_admin = self.config.is_admin(event.message.from_user.id)
+                elif hasattr(event, 'callback_query') and event.callback_query and event.callback_query.from_user:
+                    is_user_admin = self.config.is_admin(event.callback_query.from_user.id)
+                
                 if hasattr(event, 'message') and event.message:
                     await event.message.answer(
                         "😔 Произошла неожиданная ошибка.\n"
                         "Попробуйте еще раз или обратитесь в поддержку.",
-                        reply_markup=get_main_menu_keyboard()
+                        reply_markup=get_main_menu_keyboard(is_admin=is_user_admin)
                     )
                 elif hasattr(event, 'callback_query') and event.callback_query:
                     await event.callback_query.message.answer(
                         "😔 Произошла неожиданная ошибка.\n"
                         "Попробуйте еще раз или обратитесь в поддержку.",
-                        reply_markup=get_main_menu_keyboard()
+                        reply_markup=get_main_menu_keyboard(is_admin=is_user_admin)
                     )
             except:
                 pass  # Если не можем отправить сообщение, просто логируем

@@ -253,7 +253,7 @@ async def handle_rating_selection(callback: CallbackQuery, state: FSMContext):
 
 
 @reviews_router.message(ReviewStates.writing_comment)
-async def process_review_comment(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_review_comment(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False):
     """Обработка комментария к отзыву"""
     try:
         # Удаляем сообщение пользователя
@@ -294,7 +294,7 @@ async def process_review_comment(message: Message, state: FSMContext, db_queries
                 f"Ваша оценка: {stars} ({rating}/5)\n"
                 f"Комментарий: {cleaned_data['comment']}\n\n"
                 f"{SUCCESS_MESSAGES['REVIEW_CREATED']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             

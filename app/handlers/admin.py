@@ -8,6 +8,7 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKe
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 from ..database.queries import DatabaseQueries
 from ..config import BotConfig
@@ -767,3 +768,78 @@ async def show_admin_help(message: Message, config: BotConfig):
     text += "• 📥 Создание бэкапов БД"
     
     await message.answer(text, parse_mode='Markdown')
+
+@admin_router.message(Command("get_id"))
+async def get_user_id(message: Message):
+    """Команда для получения своего Telegram ID"""
+    user_id = message.from_user.id
+    first_name = message.from_user.first_name or 'Не указано'
+    username = message.from_user.username or 'Не указан'
+    
+    # Простое сообщение без Markdown
+    text = f"🆔 Ваш Telegram ID: {user_id}\n\n"
+    text += f"Информация:\n"
+    text += f"• Имя: {first_name}\n"
+    text += f"• Username: @{username}\n"
+    text += f"• ID: {user_id}\n\n"
+    text += f"💡 Для настройки админки:\n"
+    text += f"Добавьте ваш ID в файл config.txt:\n"
+    text += f"ADMIN_IDS={user_id},1003589165"
+    
+    await message.answer(text)
+
+@admin_router.message(Command("check_admin"))
+async def check_admin_status(message: Message, config: BotConfig):
+    """Проверка админ статуса"""
+    is_admin = config.is_admin(message.from_user.id)
+    admin_ids = config.admin_ids
+    
+    text = f"🔍 Проверка админ статуса\n\n"
+    text += f"Ваш ID: {message.from_user.id}\n"
+    text += f"Админ статус: {'✅ ДА' if is_admin else '❌ НЕТ'}\n"
+    text += f"Список админов: {admin_ids}\n\n"
+    text += f"Содержится в списке: {'✅ ДА' if message.from_user.id in admin_ids else '❌ НЕТ'}"
+    
+    await message.answer(text)
+
+@admin_router.message(Command("update_menu"))
+async def force_update_menu(message: Message, config: BotConfig):
+    """Принудительное обновление главного меню"""
+    is_admin = config.is_admin(message.from_user.id)
+    
+    print(f"DEBUG force_update_menu: user_id = {message.from_user.id}")
+    print(f"DEBUG force_update_menu: is_admin = {is_admin}")
+    print(f"DEBUG force_update_menu: admin_ids = {config.admin_ids}")
+    
+    await message.answer(
+        f"🔄 Обновление главного меню\n\n"
+        f"Ваш статус: {'Администратор' if is_admin else 'Пользователь'}",
+        reply_markup=get_main_menu_keyboard(is_admin=is_admin)
+    )
+
+@admin_router.message(Command("test_admin"))
+async def test_admin_button(message: Message, config: BotConfig):
+    """Тест админ кнопки"""
+    is_admin = config.is_admin(message.from_user.id)
+    
+    if is_admin:
+        # Создаем клавиатуру с админ кнопкой
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="🔧 Админ панель")],
+                [KeyboardButton(text="🔙 Обычное меню")]
+            ],
+            resize_keyboard=True
+        )
+        await message.answer("🔧 Тестовая админ клавиатура:", reply_markup=keyboard)
+    else:
+        await message.answer("❌ Вы не администратор")
+
+@admin_router.message(F.text == "🔙 Обычное меню")
+async def back_to_normal_menu(message: Message, config: BotConfig):
+    """Возврат к обычному меню"""
+    is_admin = config.is_admin(message.from_user.id)
+    await message.answer(
+        "🏠 Главное меню",
+        reply_markup=get_main_menu_keyboard(is_admin=is_admin)
+    )

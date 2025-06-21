@@ -1,5 +1,5 @@
 """
-Клавиатуры главного меню
+Клавиатуры главного меню (исправленная версия с админ панелью)
 """
 from aiogram.types import (
     ReplyKeyboardMarkup, KeyboardButton,
@@ -8,30 +8,43 @@ from aiogram.types import (
 from ..utils.constants import BUTTON_TEXTS, CALLBACK_DATA
 
 
-def get_main_menu_keyboard() -> ReplyKeyboardMarkup:
-    """Главное меню бота"""
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text=BUTTON_TEXTS['MAKE_ORDER']), 
-                KeyboardButton(text=BUTTON_TEXTS['SERVICE_DESCRIPTIONS'])
-            ],
-            [
-                KeyboardButton(text=BUTTON_TEXTS['MASTERS']), 
-                KeyboardButton(text=BUTTON_TEXTS['REVIEWS'])
-            ],
-            [
-                KeyboardButton(text=BUTTON_TEXTS['AI_CONSULTATION']), 
-                KeyboardButton(text=BUTTON_TEXTS['SUPPORT'])
-            ],
-            [
-                KeyboardButton(text=BUTTON_TEXTS['PROFILE'])
-            ]
+def get_main_menu_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:
+    """Главное меню бота с поддержкой админ панели"""
+    
+    print(f"DEBUG get_main_menu_keyboard: is_admin = {is_admin}")
+    
+    keyboard = [
+        [
+            KeyboardButton(text=BUTTON_TEXTS['MAKE_ORDER']), 
+            KeyboardButton(text=BUTTON_TEXTS['SERVICE_DESCRIPTIONS'])
         ],
+        [
+            KeyboardButton(text=BUTTON_TEXTS['MASTERS']), 
+            KeyboardButton(text=BUTTON_TEXTS['REVIEWS'])
+        ],
+        [
+            KeyboardButton(text=BUTTON_TEXTS['AI_CONSULTATION']), 
+            KeyboardButton(text=BUTTON_TEXTS['SUPPORT'])
+        ],
+        [
+            KeyboardButton(text=BUTTON_TEXTS['PROFILE'])
+        ]
+    ]
+    
+    # Добавляем кнопку админ панели для администраторов
+    if is_admin:
+        print("DEBUG: Добавляем админ кнопку!")
+        keyboard.append([
+            KeyboardButton(text="🔧 Админ панель")
+        ])
+    else:
+        print("DEBUG: Админ кнопка НЕ добавлена")
+    
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard,
         resize_keyboard=True,
         one_time_keyboard=False
     )
-    return keyboard
 
 
 def get_welcome_keyboard() -> InlineKeyboardMarkup:
@@ -45,9 +58,9 @@ def get_welcome_keyboard() -> InlineKeyboardMarkup:
     return keyboard
 
 
-def get_main_menu_inline_keyboard() -> InlineKeyboardMarkup:
-    """Inline-версия главного меню"""
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+def get_main_menu_inline_keyboard(is_admin: bool = False) -> InlineKeyboardMarkup:
+    """Inline-версия главного меню с поддержкой админ панели"""
+    keyboard = [
         [
             InlineKeyboardButton(
                 text=BUTTON_TEXTS['MAKE_ORDER'], 
@@ -84,11 +97,21 @@ def get_main_menu_inline_keyboard() -> InlineKeyboardMarkup:
                 callback_data=CALLBACK_DATA['PROFILE']
             )
         ]
-    ])
-    return keyboard
+    ]
+    
+    # Добавляем кнопку админ панели для администраторов
+    if is_admin:
+        keyboard.append([
+            InlineKeyboardButton(
+                text="🔧 Админ панель", 
+                callback_data="admin_main"
+            )
+        ])
+    
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def get_back_to_main_keyboard() -> InlineKeyboardMarkup:
+def get_back_to_main_keyboard(is_admin: bool = False) -> InlineKeyboardMarkup:
     """Клавиатура с кнопкой возврата в главное меню"""
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(

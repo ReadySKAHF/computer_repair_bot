@@ -141,7 +141,7 @@ async def handle_profile_editing(callback: CallbackQuery, state: FSMContext):
 
 
 @profile_router.message(ProfileEditStates.editing_name)
-async def process_new_name(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_new_name(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False):
     """Обработка нового имени"""
     try:
         # Удаляем сообщение пользователя
@@ -162,7 +162,7 @@ async def process_new_name(message: Message, state: FSMContext, db_queries: Data
                 f"✅ **Имя обновлено!**\n\n"
                 f"Новое имя: **{cleaned_value}**\n\n"
                 f"{SUCCESS_MESSAGES['PROFILE_UPDATED']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             logging.info(f"Пользователь {message.from_user.id} обновил имя на '{cleaned_value}'")
@@ -184,7 +184,7 @@ async def process_new_name(message: Message, state: FSMContext, db_queries: Data
 
 
 @profile_router.message(ProfileEditStates.editing_phone)
-async def process_new_phone(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_new_phone(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False):
     """Обработка нового телефона"""
     try:
         # Удаляем сообщение пользователя
@@ -205,7 +205,7 @@ async def process_new_phone(message: Message, state: FSMContext, db_queries: Dat
                 f"✅ **Телефон обновлен!**\n\n"
                 f"Новый телефон: **{cleaned_value}**\n\n"
                 f"{SUCCESS_MESSAGES['PROFILE_UPDATED']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             logging.info(f"Пользователь {message.from_user.id} обновил телефон")
@@ -227,7 +227,7 @@ async def process_new_phone(message: Message, state: FSMContext, db_queries: Dat
 
 
 @profile_router.message(ProfileEditStates.editing_address)
-async def process_new_address(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_new_address(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False):
     """Обработка нового адреса"""
     try:
         # Удаляем сообщение пользователя
@@ -248,7 +248,7 @@ async def process_new_address(message: Message, state: FSMContext, db_queries: D
                 f"✅ **Адрес обновлен!**\n\n"
                 f"Новый адрес: **{cleaned_value}**\n\n"
                 f"{SUCCESS_MESSAGES['PROFILE_UPDATED']}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             logging.info(f"Пользователь {message.from_user.id} обновил адрес")

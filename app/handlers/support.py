@@ -151,7 +151,7 @@ async def start_support_message(callback: CallbackQuery, state: FSMContext):
 
 
 @support_router.message(SupportStates.writing_message)
-async def process_support_message(message: Message, state: FSMContext, db_queries: DatabaseQueries):
+async def process_support_message(message: Message, state: FSMContext, db_queries: DatabaseQueries, is_admin: bool = False):
     """Обработка сообщения в поддержку"""
     try:
         # Удаляем сообщение пользователя
@@ -173,7 +173,7 @@ async def process_support_message(message: Message, state: FSMContext, db_querie
                 f"Ваше сообщение передано в службу поддержки.\n"
                 f"Мы свяжемся с вами в ближайшее время.\n\n"
                 f"**Ваше сообщение:**\n{cleaned_message[:200]}{'...' if len(cleaned_message) > 200 else ''}",
-                reply_markup=get_main_menu_keyboard(),
+                reply_markup=get_main_menu_keyboard(is_admin=is_admin),
                 parse_mode='Markdown'
             )
             
