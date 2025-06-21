@@ -232,7 +232,7 @@ def get_faq_keyboard() -> InlineKeyboardMarkup:
 
 def get_order_details_keyboard(order_id: int, order_status: str) -> InlineKeyboardMarkup:
     """
-    Клавиатура деталей заказа с поддержкой завершения
+    Клавиатура деталей заказа с поддержкой завершения (обновленная)
     
     Args:
         order_id: ID заказа
@@ -263,21 +263,16 @@ def get_order_details_keyboard(order_id: int, order_status: str) -> InlineKeyboa
             text="✍️ Оставить отзыв", 
             callback_data=f"review_order_{order_id}"
         )])
-        keyboard.append([InlineKeyboardButton(
-            text="🔄 Повторить заказ", 
-            callback_data=f"repeat_order_{order_id}"
-        )])
+        # Убрали кнопку "Повторить заказ"
     
-    # Общие действия
-    keyboard.extend([
-        [InlineKeyboardButton(
-            text="📱 Связаться с мастером", 
-            callback_data=f"contact_master_{order_id}"
-        )],
-        [InlineKeyboardButton(
+    # Убрали кнопку "Связаться с мастером"
+    
+    # Кнопка назад
+    keyboard.append([
+        InlineKeyboardButton(
             text="🔙 К истории заказов", 
             callback_data="back_to_order_history"
-        )]
+        )
     ])
     
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
