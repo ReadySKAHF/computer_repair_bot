@@ -159,3 +159,14 @@ secrets.py
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Database and logs
+*.db
+*.log
+backup_*.db
