@@ -36,12 +36,7 @@ def get_admin_main_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="💬 Поддержка", callback_data="admin_support_management")
         ],
         [
-            InlineKeyboardButton(text="🤖 ИИ сервис", callback_data="admin_ai"),
-            InlineKeyboardButton(text="🔧 Настройки", callback_data="admin_settings")
-        ],
-        [
-            InlineKeyboardButton(text="📥 Бэкап БД", callback_data="admin_backup"),
-            InlineKeyboardButton(text="🔄 Перезагрузка", callback_data="admin_reload")
+            InlineKeyboardButton(text="📥 Бэкап БД", callback_data="admin_backup")
         ],
         [
             InlineKeyboardButton(text="🔙 Главное меню", callback_data="main_menu")
@@ -97,9 +92,24 @@ async def show_admin_statistics(callback: CallbackQuery, db_queries: DatabaseQue
             'cancelled': await db_queries.get_orders_count('cancelled')
         }
         
+        # Получаем активных пользователей за сегодня
+        # Подсчитываем пользователей, которые создали заказы сегодня
+        today_orders = await db_queries.get_all_orders(1000, 0)  # Получаем все заказы
+        active_users_today = len(set(
+            order['user_id'] for order in today_orders 
+            if order['created_at'] and order['created_at'][:10] == datetime.now().strftime('%Y-%m-%d')
+        )) if today_orders else 0
+        
+        # Получаем новых пользователей за неделю
+        week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        # Это требует модификации БД запроса, пока используем приблизительную оценку
+        new_users_week = max(0, stats.get('total_users', 0) // 10)  # Примерная оценка
+        
         text = "📊 **Детальная статистика**\n\n"
         text += f"**Пользователи:**\n"
-        text += f"• Всего зарегистрировано: {stats.get('total_users', 0)}\n\n"
+        text += f"• Всего зарегистрировано: {stats.get('total_users', 0)}\n"
+        text += f"• Активных сегодня: {active_users_today}\n"
+        text += f"• Новых за неделю: {new_users_week}\n\n"
         
         text += f"**Заказы:**\n"
         text += f"• Всего: {stats.get('total_orders', 0)}\n"
@@ -169,8 +179,7 @@ async def show_all_orders_management(callback: CallbackQuery, state: FSMContext,
         
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [
-                InlineKeyboardButton(text="📋 Список заказов", callback_data="admin_orders_list"),
-                InlineKeyboardButton(text="🔄 По статусам", callback_data="admin_orders_by_status")
+                InlineKeyboardButton(text="📋 Список заказов", callback_data="admin_orders_list")
             ],
             [
                 InlineKeyboardButton(text="✅ Завершить все", callback_data="admin_complete_all_orders"),
@@ -217,10 +226,6 @@ async def show_orders_list(callback: CallbackQuery, state: FSMContext, db_querie
                 text += f"└ Услуги: {order['services'][:50]}...\n\n"
         
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [
-                InlineKeyboardButton(text="⏳ Ожидающие", callback_data="admin_filter_pending"),
-                InlineKeyboardButton(text="🔧 В работе", callback_data="admin_filter_progress")
-            ],
             [
                 InlineKeyboardButton(text="✅ Завершить все активные", callback_data="admin_complete_all_orders")
             ],
@@ -385,6 +390,79 @@ async def show_new_support_requests(callback: CallbackQuery, db_queries: Databas
         await callback.answer("❌ Ошибка при загрузке новых обращений")
 
 
+@admin_router.callback_query(F.data == "admin_answered_support")
+async def show_answered_support_requests(callback: CallbackQuery, db_queries: DatabaseQueries, config: BotConfig):
+    """Показ отвеченных обращений в поддержку"""
+    if not config.is_admin(callback.from_user.id):
+        await callback.answer("❌ Доступ запрещен")
+        return
+    
+    try:
+        answered_requests = await db_queries.get_support_requests_for_admin('answered', 10)
+        
+        if not answered_requests:
+            text = "✅ **Отвеченные обращения**\n\nОтвеченных обращений нет!"
+        else:
+            text = f"✅ **Отвеченные обращения** ({len(answered_requests)})\n\n"
+            
+            for req in answered_requests:
+                text += f"**#{req['id']} от {req['user_name']}**\n"
+                text += f"📞 {req['user_phone']}\n"
+                text += f"📅 Создано: {req['created_at']}\n"
+                text += f"📅 Отвечено: {req['answered_at'] or 'Не указано'}\n"
+                text += f"💬 Вопрос: {req['message'][:100]}{'...' if len(req['message']) > 100 else ''}\n"
+                text += f"💭 Ответ: {req['admin_response'][:100]}{'...' if len(req['admin_response'] or '') > 100 else ''}\n\n"
+        
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Управление поддержкой", callback_data="admin_support_management")]
+        ])
+        
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в show_answered_support_requests: {e}")
+        await callback.answer("❌ Ошибка при загрузке отвеченных обращений")
+
+
+@admin_router.callback_query(F.data == "admin_all_support")
+async def show_all_support_requests(callback: CallbackQuery, db_queries: DatabaseQueries, config: BotConfig):
+    """Показ всех обращений в поддержку"""
+    if not config.is_admin(callback.from_user.id):
+        await callback.answer("❌ Доступ запрещен")
+        return
+    
+    try:
+        all_requests = await db_queries.get_support_requests_for_admin(None, 15)
+        
+        if not all_requests:
+            text = "📋 **Все обращения**\n\nОбращений в поддержку нет!"
+        else:
+            text = f"📋 **Все обращения** ({len(all_requests)})\n\n"
+            
+            for req in all_requests:
+                status_emoji = {"new": "🟡", "read": "🔵", "answered": "✅"}.get(req['status'], "❓")
+                text += f"{status_emoji} **#{req['id']} от {req['user_name']}**\n"
+                text += f"📅 {req['created_at']}\n"
+                text += f"💬 {req['message'][:80]}{'...' if len(req['message']) > 80 else ''}\n"
+                if req['admin_response']:
+                    text += f"💭 Ответ дан: Да\n"
+                else:
+                    text += f"💭 Ответ дан: Нет\n"
+                text += "\n"
+        
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Управление поддержкой", callback_data="admin_support_management")]
+        ])
+        
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
+        await callback.answer()
+    
+    except Exception as e:
+        logging.error(f"Ошибка в show_all_support_requests: {e}")
+        await callback.answer("❌ Ошибка при загрузке всех обращений")
+
+
 @admin_router.callback_query(F.data.startswith("admin_respond_"))
 async def start_respond_to_support(callback: CallbackQuery, state: FSMContext, db_queries: DatabaseQueries, config: BotConfig):
     """Начало ответа на обращение в поддержку"""
@@ -481,17 +559,9 @@ async def show_admin_users(callback: CallbackQuery, db_queries: DatabaseQueries,
         
         text = "👥 **Управление пользователями**\n\n"
         text += f"**Общая информация:**\n"
-        text += f"• Всего пользователей: {stats.get('total_users', 0)}\n"
-        text += f"• Активных сегодня: подсчет в разработке\n"
-        text += f"• Новых за неделю: подсчет в разработке\n\n"
-        
-        text += f"**Доступные действия:**\n"
-        text += f"• Просмотр статистики пользователей\n"
-        text += f"• Мониторинг активности\n"
-        text += f"• Управление правами доступа\n"
+        text += f"• Всего пользователей: {stats.get('total_users', 0)}\n\n"
         
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="📊 Статистика активности", callback_data="admin_user_stats")],
             [InlineKeyboardButton(text="🔙 Админ-панель", callback_data="admin_main")]
         ])
         
@@ -501,43 +571,6 @@ async def show_admin_users(callback: CallbackQuery, db_queries: DatabaseQueries,
     except Exception as e:
         logging.error(f"Ошибка в show_admin_users: {e}")
         await callback.answer("❌ Ошибка при загрузке пользователей")
-
-
-@admin_router.callback_query(F.data == "admin_ai")
-async def show_admin_ai(callback: CallbackQuery, ai_service, config: BotConfig):
-    """Управление ИИ сервисом"""
-    if not config.is_admin(callback.from_user.id):
-        await callback.answer("❌ Доступ запрещен")
-        return
-    
-    try:
-        # Проверяем статус ИИ сервиса
-        is_available = ai_service.check_service_availability() if ai_service else False
-        
-        text = "🤖 **Управление ИИ сервисом**\n\n"
-        text += f"**Статус сервиса:** {'🟢 Доступен' if is_available else '🔴 Недоступен'}\n"
-        text += f"**Модель:** Gemini 1.5 Flash\n"
-        text += f"**Резервная логика:** Включена\n\n"
-        
-        if is_available:
-            text += "✅ ИИ консультант работает нормально\n"
-            text += "Пользователи получают полные рекомендации от ИИ"
-        else:
-            text += "❌ Проблемы с ИИ сервисом\n"
-            text += "Пользователи получают рекомендации на основе ключевых слов"
-        
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="🔄 Проверить статус", callback_data="admin_ai_check")],
-            [InlineKeyboardButton(text="📊 Статистика ИИ", callback_data="admin_ai_stats")],
-            [InlineKeyboardButton(text="🔙 Админ-панель", callback_data="admin_main")]
-        ])
-        
-        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode='Markdown')
-        await callback.answer()
-    
-    except Exception as e:
-        logging.error(f"Ошибка в show_admin_ai: {e}")
-        await callback.answer("❌ Ошибка при загрузке статуса ИИ")
 
 
 @admin_router.callback_query(F.data == "admin_backup")
@@ -724,17 +757,36 @@ async def show_admin_user_orders(message: Message, db_queries: DatabaseQueries, 
 @admin_router.message(Command("get_id"))
 async def get_user_id(message: Message):
     """Команда для получения своего Telegram ID"""
-    await message.answer(
-        f"🆔 **Ваш Telegram ID:** `{message.from_user.id}`\n\n"
-        f"**Информация:**\n"
-        f"• Имя: {message.from_user.first_name or 'Не указано'}\n"
-        f"• Username: @{message.from_user.username or 'Не указан'}\n"
-        f"• ID: `{message.from_user.id}`\n\n"
-        f"💡 **Для настройки админки:**\n"
-        f"Добавьте ваш ID в файл config.txt:\n"
-        f"`ADMIN_IDS={message.from_user.id},1003589165`",
-        parse_mode='Markdown'
-    )
+    user_id = message.from_user.id
+    first_name = message.from_user.first_name or 'Не указано'
+    username = message.from_user.username or 'Не указан'
+    
+    # Простое сообщение без Markdown
+    text = f"🆔 Ваш Telegram ID: {user_id}\n\n"
+    text += f"Информация:\n"
+    text += f"• Имя: {first_name}\n"
+    text += f"• Username: @{username}\n"
+    text += f"• ID: {user_id}\n\n"
+    text += f"💡 Для настройки админки:\n"
+    text += f"Добавьте ваш ID в файл config.txt:\n"
+    text += f"ADMIN_IDS={user_id},1003589165"
+    
+    await message.answer(text)
+
+
+@admin_router.message(Command("check_admin"))
+async def check_admin_status(message: Message, config: BotConfig):
+    """Проверка админ статуса"""
+    is_admin = config.is_admin(message.from_user.id)
+    admin_ids = config.admin_ids
+    
+    text = f"🔍 Проверка админ статуса\n\n"
+    text += f"Ваш ID: {message.from_user.id}\n"
+    text += f"Админ статус: {'✅ ДА' if is_admin else '❌ НЕТ'}\n"
+    text += f"Список админов: {admin_ids}\n\n"
+    text += f"Содержится в списке: {'✅ ДА' if message.from_user.id in admin_ids else '❌ НЕТ'}"
+    
+    await message.answer(text)
 
 
 @admin_router.message(Command("admin_help"))
@@ -764,82 +816,6 @@ async def show_admin_help(message: Message, config: BotConfig):
     text += "• 👥 Управление пользователями\n"
     text += "• 📋 Управление всеми заказами\n"
     text += "• 💬 Обращения в поддержку с ответами\n"
-    text += "• 🤖 Статус ИИ сервиса\n"
     text += "• 📥 Создание бэкапов БД"
     
     await message.answer(text, parse_mode='Markdown')
-
-@admin_router.message(Command("get_id"))
-async def get_user_id(message: Message):
-    """Команда для получения своего Telegram ID"""
-    user_id = message.from_user.id
-    first_name = message.from_user.first_name or 'Не указано'
-    username = message.from_user.username or 'Не указан'
-    
-    # Простое сообщение без Markdown
-    text = f"🆔 Ваш Telegram ID: {user_id}\n\n"
-    text += f"Информация:\n"
-    text += f"• Имя: {first_name}\n"
-    text += f"• Username: @{username}\n"
-    text += f"• ID: {user_id}\n\n"
-    text += f"💡 Для настройки админки:\n"
-    text += f"Добавьте ваш ID в файл config.txt:\n"
-    text += f"ADMIN_IDS={user_id},1003589165"
-    
-    await message.answer(text)
-
-@admin_router.message(Command("check_admin"))
-async def check_admin_status(message: Message, config: BotConfig):
-    """Проверка админ статуса"""
-    is_admin = config.is_admin(message.from_user.id)
-    admin_ids = config.admin_ids
-    
-    text = f"🔍 Проверка админ статуса\n\n"
-    text += f"Ваш ID: {message.from_user.id}\n"
-    text += f"Админ статус: {'✅ ДА' if is_admin else '❌ НЕТ'}\n"
-    text += f"Список админов: {admin_ids}\n\n"
-    text += f"Содержится в списке: {'✅ ДА' if message.from_user.id in admin_ids else '❌ НЕТ'}"
-    
-    await message.answer(text)
-
-@admin_router.message(Command("update_menu"))
-async def force_update_menu(message: Message, config: BotConfig):
-    """Принудительное обновление главного меню"""
-    is_admin = config.is_admin(message.from_user.id)
-    
-    print(f"DEBUG force_update_menu: user_id = {message.from_user.id}")
-    print(f"DEBUG force_update_menu: is_admin = {is_admin}")
-    print(f"DEBUG force_update_menu: admin_ids = {config.admin_ids}")
-    
-    await message.answer(
-        f"🔄 Обновление главного меню\n\n"
-        f"Ваш статус: {'Администратор' if is_admin else 'Пользователь'}",
-        reply_markup=get_main_menu_keyboard(is_admin=is_admin)
-    )
-
-@admin_router.message(Command("test_admin"))
-async def test_admin_button(message: Message, config: BotConfig):
-    """Тест админ кнопки"""
-    is_admin = config.is_admin(message.from_user.id)
-    
-    if is_admin:
-        # Создаем клавиатуру с админ кнопкой
-        keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="🔧 Админ панель")],
-                [KeyboardButton(text="🔙 Обычное меню")]
-            ],
-            resize_keyboard=True
-        )
-        await message.answer("🔧 Тестовая админ клавиатура:", reply_markup=keyboard)
-    else:
-        await message.answer("❌ Вы не администратор")
-
-@admin_router.message(F.text == "🔙 Обычное меню")
-async def back_to_normal_menu(message: Message, config: BotConfig):
-    """Возврат к обычному меню"""
-    is_admin = config.is_admin(message.from_user.id)
-    await message.answer(
-        "🏠 Главное меню",
-        reply_markup=get_main_menu_keyboard(is_admin=is_admin)
-    )

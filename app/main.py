@@ -20,6 +20,7 @@ from .keyboards.main_menu import get_main_menu_keyboard, get_main_menu_inline_ke
 from .utils.constants import CALLBACK_DATA
 
 
+
 class RepairBot:
     """Основной класс бота"""
     
@@ -83,13 +84,13 @@ class RepairBot:
             
             # Добавляем роутеры в диспетчер (порядок важен!)
             self.dp.include_router(registration_router)
-            self.dp.include_router(admin_router)
             self.dp.include_router(orders_router)
             self.dp.include_router(services_router)
             self.dp.include_router(profile_router)
             self.dp.include_router(reviews_router)
             self.dp.include_router(ai_router)
             self.dp.include_router(support_router)
+            self.dp.include_router(admin_router)
             
             # Обработчик для кнопки "🔧 Админ панель"
             @self.dp.message(F.text == "🔧 Админ панель")

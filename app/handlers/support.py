@@ -284,7 +284,7 @@ async def faq_how_to_order(callback: CallbackQuery):
 
 @support_router.callback_query(F.data == "faq_payment")
 async def faq_payment(callback: CallbackQuery):
-    """FAQ: Оплата"""
+    """FAQ: Оплата (обновленная версия без кнопки "Описание услуг")"""
     text = "💰 **Как происходит оплата?**\n\n"
     text += "**Способы оплаты:**\n"
     text += "• 💵 Наличными мастеру\n"
@@ -300,7 +300,6 @@ async def faq_payment(callback: CallbackQuery):
     text += "• Предоставляем чек или квитанцию"
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📋 Описание услуг", callback_data="view_services")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
     ])
     
@@ -310,7 +309,7 @@ async def faq_payment(callback: CallbackQuery):
 
 @support_router.callback_query(F.data == "faq_timing")
 async def faq_timing(callback: CallbackQuery):
-    """FAQ: Время выполнения"""
+    """FAQ: Время выполнения (обновленная версия без кнопки "Сделать заказ")"""
     text = "⏰ **Время выполнения работ**\n\n"
     text += "**Типичное время:**\n"
     text += "• 🔍 Диагностика: 30 минут\n"
@@ -328,7 +327,6 @@ async def faq_timing(callback: CallbackQuery):
     text += "• В выходные дни по предварительной записи"
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🛠️ Сделать заказ", callback_data="make_order")],
         [InlineKeyboardButton(text="🔙 К FAQ", callback_data="faq")]
     ])
     
